@@ -16,9 +16,7 @@
     --text: #c8dff5;
     --muted: #3d5a7a;
     --accent: #00b8ff;
-    --accent2: #0066cc;
     --gold: #ffc107;
-    --grid: rgba(0,184,255,0.06);
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -38,12 +36,9 @@
 
   header {
     padding: 14px 20px 12px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+    display: flex; align-items: center; justify-content: space-between;
     border-bottom: 1px solid rgba(0,184,255,0.15);
     background: rgba(3,8,16,0.95);
-    backdrop-filter: blur(10px);
   }
 
   .header-left { display: flex; align-items: center; gap: 14px; }
@@ -55,369 +50,107 @@
     display: flex; align-items: center; justify-content: center;
     position: relative;
   }
+  .hawk-eye-logo::before { content:''; width:10px; height:10px; background:var(--accent); border-radius:50%; }
+  .hawk-eye-logo::after { content:''; position:absolute; width:24px; height:24px; border:1px solid rgba(0,184,255,0.3); border-radius:50%; }
 
-  .hawk-eye-logo::before {
-    content: '';
-    width: 10px; height: 10px;
-    background: var(--accent);
-    border-radius: 50%;
-    box-shadow: 0 0 8px var(--accent);
-  }
-
-  .hawk-eye-logo::after {
-    content: '';
-    position: absolute;
-    width: 24px; height: 24px;
-    border: 1px solid rgba(0,184,255,0.3);
-    border-radius: 50%;
-  }
-
-  h1 {
-    font-family: 'Orbitron', monospace;
-    font-size: 16px;
-    font-weight: 700;
-    letter-spacing: 3px;
-    color: var(--accent);
-    text-transform: uppercase;
-  }
-
-  .header-tag {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
-    color: var(--muted);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-top: 2px;
-  }
-
-  .live-indicator {
-    display: flex; align-items: center; gap: 6px;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
-    color: var(--gold);
-    letter-spacing: 1px;
-  }
-
-  .live-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--gold);
-    animation: blink 1.2s ease-in-out infinite;
-  }
+  h1 { font-family:'Orbitron',monospace; font-size:16px; font-weight:700; letter-spacing:3px; color:var(--accent); text-transform:uppercase; }
+  .header-tag { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:2px; margin-top:2px; }
+  .live-indicator { display:flex; align-items:center; gap:6px; font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--gold); letter-spacing:1px; }
+  .live-dot { width:6px; height:6px; border-radius:50%; background:var(--gold); animation:blink 1.2s ease-in-out infinite; }
 
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
-
-  /* Steps */
-  .steps {
-    display: flex;
-    padding: 10px 20px;
-    gap: 0;
-    border-bottom: 1px solid rgba(0,184,255,0.1);
-    background: var(--surface);
-    overflow-x: auto;
-  }
-
-  .step {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
-    color: var(--muted);
-    white-space: nowrap;
-    padding-right: 12px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-
-  .step.active { color: var(--accent); }
-  .step.done { color: #00e5a0; }
-
-  .step-num {
-    width: 20px; height: 20px;
-    border-radius: 3px;
-    border: 1px solid currentColor;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 10px;
-    flex-shrink: 0;
-  }
-
-  .step.done .step-num { background: #00e5a0; border-color: #00e5a0; color: #000; }
-  .step.active .step-num { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 700; }
-
-  .step-sep { color: rgba(0,184,255,0.2); padding-right: 12px; font-size: 10px; }
-
-  /* Main area */
-  main { flex: 1; padding: 14px 16px; display: flex; flex-direction: column; gap: 14px; }
-
-  /* Upload zone */
-  #upload-zone {
-    border: 1px solid rgba(0,184,255,0.2);
-    border-radius: 4px;
-    padding: 36px 20px;
-    text-align: center;
-    cursor: pointer;
-    transition: border-color 0.2s, background 0.2s;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    background: var(--surface);
-    position: relative;
-    overflow: hidden;
-  }
-
-  #upload-zone::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--accent), transparent);
-    animation: scan 3s linear infinite;
-  }
-
   @keyframes scan { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
+  @keyframes reveal { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
-  #upload-zone:hover, #upload-zone.drag {
-    border-color: var(--accent);
-    background: rgba(0,184,255,0.04);
+  .steps {
+    display:flex; padding:10px 20px;
+    border-bottom:1px solid rgba(0,184,255,0.1);
+    background:var(--surface); overflow-x:auto; gap:0;
   }
+  .step { display:flex; align-items:center; gap:6px; font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--muted); white-space:nowrap; padding-right:12px; letter-spacing:1px; text-transform:uppercase; }
+  .step.active { color:var(--accent); }
+  .step.done { color:#00e5a0; }
+  .step-num { width:20px; height:20px; border-radius:3px; border:1px solid currentColor; display:flex; align-items:center; justify-content:center; font-size:10px; flex-shrink:0; }
+  .step.done .step-num { background:#00e5a0; border-color:#00e5a0; color:#000; }
+  .step.active .step-num { background:var(--accent); border-color:var(--accent); color:#000; font-weight:700; }
+  .step-sep { color:rgba(0,184,255,0.2); padding-right:12px; font-size:10px; }
 
-  .upload-icon {
-    width: 56px; height: 56px;
-    border: 1.5px solid rgba(0,184,255,0.3);
-    border-radius: 50%;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 24px;
-    position: relative;
-  }
+  main { flex:1; padding:14px 16px; display:flex; flex-direction:column; gap:14px; }
 
-  .upload-icon::after {
-    content: '';
-    position: absolute;
-    width: 68px; height: 68px;
-    border: 1px solid rgba(0,184,255,0.1);
-    border-radius: 50%;
-  }
+  .btn { padding:10px 16px; border-radius:3px; border:none; font-family:'Orbitron',monospace; font-size:11px; font-weight:600; cursor:pointer; transition:opacity 0.15s,transform 0.1s,box-shadow 0.15s; letter-spacing:1px; text-transform:uppercase; }
+  .btn:active { transform:scale(0.97); }
+  .btn-primary { background:var(--accent); color:#000; box-shadow:0 0 16px rgba(0,184,255,0.3); }
+  .btn-primary:hover { box-shadow:0 0 24px rgba(0,184,255,0.5); }
+  .btn-secondary { background:var(--surface2); color:var(--text); border:1px solid rgba(0,184,255,0.15); }
+  .btn-danger { background:rgba(255,23,68,0.1); color:var(--out); border:1px solid rgba(255,23,68,0.25); }
+  .btn:disabled { opacity:0.3; cursor:not-allowed; box-shadow:none; }
 
-  .upload-label {
-    font-family: 'Orbitron', monospace;
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--accent);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-  }
+  .info-card { background:var(--surface); border-radius:4px; padding:12px 14px; font-size:12px; line-height:1.7; color:var(--muted); border:1px solid rgba(0,184,255,0.1); border-left:2px solid var(--accent); font-family:'Share Tech Mono',monospace; }
+  .info-card strong { color:var(--accent); font-weight:600; }
 
-  .upload-hint { font-size: 11px; color: var(--muted); font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; }
+  /* SYNC SECTION */
+  .sync-intro { background:var(--surface); border:1px solid rgba(0,184,255,0.15); border-radius:4px; padding:16px; position:relative; overflow:hidden; }
+  .sync-intro::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--accent),transparent); animation:scan 3s linear infinite; }
+  .sync-title { font-family:'Orbitron',monospace; font-size:13px; font-weight:600; color:var(--accent); letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; }
+  .sync-desc { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--muted); line-height:1.7; }
+  .sync-desc span { color:var(--gold); }
 
-  #file-input { display: none; }
+  .cam-slots { display:flex; flex-direction:column; gap:8px; }
+  .cam-slot { background:var(--surface); border:1px solid rgba(0,184,255,0.12); border-radius:4px; padding:12px 14px; display:flex; align-items:center; gap:12px; cursor:pointer; transition:border-color 0.2s,background 0.2s; }
+  .cam-slot:hover { border-color:rgba(0,184,255,0.3); }
+  .cam-slot.loaded { border-color:#00e5a0; }
+  .cam-slot-num { width:28px; height:28px; border-radius:3px; border:1px solid var(--muted); display:flex; align-items:center; justify-content:center; font-family:'Orbitron',monospace; font-size:11px; font-weight:700; color:var(--muted); flex-shrink:0; transition:all 0.2s; }
+  .cam-slot.loaded .cam-slot-num { border-color:#00e5a0; color:#00e5a0; }
+  .cam-slot-info { flex:1; }
+  .cam-slot-label { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--text); letter-spacing:1px; }
+  .cam-slot-sub { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--muted); margin-top:2px; }
+  .cam-slot-status { font-family:'Share Tech Mono',monospace; font-size:12px; }
 
-  /* Video container */
-  #video-section { display: none; flex-direction: column; gap: 10px; }
+  .sync-bar { background:var(--surface); border:1px solid rgba(0,184,255,0.1); border-radius:4px; padding:10px 14px; display:flex; align-items:center; gap:10px; }
+  .sync-bar-label { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--muted); width:50px; flex-shrink:0; }
+  .sync-bar-track { flex:1; height:4px; background:rgba(0,184,255,0.1); border-radius:2px; overflow:hidden; }
+  .sync-bar-fill { height:100%; border-radius:2px; background:var(--accent); transition:width 0.3s ease; }
+  .sync-bar-fill.peak { background:var(--gold); }
+  .sync-bar-time { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--accent); width:55px; text-align:right; flex-shrink:0; }
 
-  #video-wrap {
-    position: relative;
-    border-radius: 4px;
-    overflow: hidden;
-    background: #000;
-    cursor: crosshair;
-    touch-action: none;
-    border: 1px solid rgba(0,184,255,0.2);
-  }
+  .sync-badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:3px; font-family:'Share Tech Mono',monospace; font-size:10px; letter-spacing:1px; text-transform:uppercase; border:1px solid currentColor; }
+  .sync-badge.synced { color:#00e5a0; background:rgba(0,229,160,0.07); }
+  .sync-badge.syncing { color:var(--gold); background:rgba(255,193,7,0.07); animation:pulse 1s infinite; }
+  .sync-badge.error { color:var(--out); background:rgba(255,23,68,0.07); }
 
-  #video-wrap video {
-    width: 100%;
-    display: block;
-    max-height: 52vh;
-    object-fit: contain;
-  }
+  .sync-status-row { display:flex; align-items:center; justify-content:space-between; gap:10px; }
 
-  #court-canvas {
-    position: absolute; top: 0; left: 0;
-    width: 100%; height: 100%;
-    pointer-events: none;
-  }
+  /* VIDEO */
+  #video-section { display:none; flex-direction:column; gap:10px; }
+  #video-wrap { position:relative; border-radius:4px; overflow:hidden; background:#000; cursor:crosshair; touch-action:none; border:1px solid rgba(0,184,255,0.2); }
+  #video-wrap video { width:100%; display:block; max-height:52vh; object-fit:contain; }
+  #court-canvas { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; }
+  #click-canvas { position:absolute; top:0; left:0; width:100%; height:100%; }
 
-  #click-canvas {
-    position: absolute; top: 0; left: 0;
-    width: 100%; height: 100%;
-  }
+  .controls { display:flex; gap:8px; align-items:center; }
+  .scrubber-wrap { display:flex; align-items:center; gap:10px; }
+  #scrubber { flex:1; accent-color:var(--accent); }
+  .time-label { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--accent); min-width:76px; }
+  .mode-badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:3px; font-family:'Share Tech Mono',monospace; font-size:10px; font-weight:500; letter-spacing:1.5px; text-transform:uppercase; border:1px solid currentColor; }
+  .mode-court { color:var(--accent); background:rgba(0,184,255,0.07); }
+  .mode-ball { color:var(--gold); background:rgba(255,193,7,0.07); border-color:var(--gold); }
+  .dot { width:5px; height:5px; border-radius:50%; background:currentColor; animation:blink 1s infinite; }
+  .phase-row { display:flex; align-items:center; justify-content:space-between; }
 
-  /* Controls */
-  .controls { display: flex; gap: 8px; align-items: center; }
-
-  .btn {
-    padding: 10px 16px;
-    border-radius: 3px;
-    border: none;
-    font-family: 'Orbitron', monospace;
-    font-size: 11px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity 0.15s, transform 0.1s, box-shadow 0.15s;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-  }
-
-  .btn:active { transform: scale(0.97); }
-
-  .btn-primary {
-    background: var(--accent);
-    color: #000;
-    box-shadow: 0 0 16px rgba(0,184,255,0.3);
-  }
-  .btn-primary:hover { box-shadow: 0 0 24px rgba(0,184,255,0.5); }
-
-  .btn-secondary {
-    background: var(--surface2);
-    color: var(--text);
-    border: 1px solid rgba(0,184,255,0.15);
-  }
-
-  .btn-danger {
-    background: rgba(255,23,68,0.1);
-    color: var(--out);
-    border: 1px solid rgba(255,23,68,0.25);
-  }
-
-  .btn:disabled { opacity: 0.3; cursor: not-allowed; box-shadow: none; }
-
-  /* Scrubber */
-  .scrubber-wrap { display: flex; align-items: center; gap: 10px; }
-  #scrubber { flex: 1; accent-color: var(--accent); }
-  .time-label {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    color: var(--accent);
-    min-width: 76px;
-  }
-
-  /* Info card */
-  .info-card {
-    background: var(--surface);
-    border-radius: 4px;
-    padding: 12px 14px;
-    font-size: 12px;
-    line-height: 1.7;
-    color: var(--muted);
-    border: 1px solid rgba(0,184,255,0.1);
-    border-left: 2px solid var(--accent);
-    font-family: 'Share Tech Mono', monospace;
-    letter-spacing: 0.3px;
-  }
-
-  .info-card strong { color: var(--accent); font-weight: 600; }
-
-  /* Mode badge */
-  .mode-badge {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 4px 10px;
-    border-radius: 3px;
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
-    font-weight: 500;
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
-    border: 1px solid currentColor;
-  }
-
-  .mode-court { color: var(--accent); background: rgba(0,184,255,0.07); }
-  .mode-ball { color: var(--gold); background: rgba(255,193,7,0.07); border-color: var(--gold); }
-
-  .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; animation: blink 1s infinite; }
-
-  /* Result */
-  #result-section {
-    display: none;
-    border-radius: 4px;
-    padding: 28px 20px;
-    text-align: center;
-    flex-direction: column;
-    align-items: center;
-    gap: 12px;
-    animation: reveal 0.4s cubic-bezier(0.16,1,0.3,1);
-    position: relative;
-    overflow: hidden;
-  }
-
-  @keyframes reveal {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
-
-  #result-section::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-  }
-
-  #result-section.in-result {
-    background: rgba(0,229,255,0.06);
-    border: 1px solid rgba(0,229,255,0.25);
-  }
-  #result-section.in-result::before { background: var(--in); box-shadow: 0 0 20px var(--in); }
-
-  #result-section.out-result {
-    background: rgba(255,23,68,0.06);
-    border: 1px solid rgba(255,23,68,0.25);
-  }
-  #result-section.out-result::before { background: var(--out); box-shadow: 0 0 20px var(--out); }
-
-  .result-label {
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 3px;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  .result-verdict {
-    font-family: 'Orbitron', monospace;
-    font-size: 56px;
-    font-weight: 900;
-    letter-spacing: 6px;
-    line-height: 1;
-    text-transform: uppercase;
-  }
-
-  .in-result .result-verdict { color: var(--in); text-shadow: 0 0 30px rgba(0,229,255,0.5); }
-  .out-result .result-verdict { color: var(--out); text-shadow: 0 0 30px rgba(255,23,68,0.5); }
-
-  .result-detail { font-size: 11px; color: var(--muted); font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; }
-  .result-distance { font-size: 14px; color: var(--text); font-family: 'Share Tech Mono', monospace; letter-spacing: 1px; }
-
-  .phase-row { display: flex; align-items: center; justify-content: space-between; }
-
-  /* Camera selector */
-  .cam-row { display: flex; gap: 8px; flex-wrap: wrap; }
-
-  .cam-btn {
-    padding: 8px 14px;
-    border-radius: 3px;
-    border: 1px solid rgba(0,184,255,0.15);
-    background: transparent;
-    color: var(--muted);
-    font-family: 'Share Tech Mono', monospace;
-    font-size: 11px;
-    letter-spacing: 1px;
-    cursor: pointer;
-    transition: all 0.15s;
-    text-transform: uppercase;
-  }
-
-  .cam-btn.selected {
-    border-color: var(--accent);
-    color: var(--accent);
-    background: rgba(0,184,255,0.08);
-    box-shadow: 0 0 10px rgba(0,184,255,0.15);
-  }
-
-  /* Corner hint text */
-  .corner-hint { font-size: 12px; color: var(--muted); text-align: center; padding: 6px 0; }
+  /* RESULT */
+  #result-section { display:none; border-radius:4px; padding:28px 20px; text-align:center; flex-direction:column; align-items:center; gap:12px; animation:reveal 0.4s cubic-bezier(0.16,1,0.3,1); position:relative; overflow:hidden; }
+  #result-section::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+  #result-section.in-result { background:rgba(0,229,255,0.06); border:1px solid rgba(0,229,255,0.25); }
+  #result-section.in-result::before { background:var(--in); }
+  #result-section.out-result { background:rgba(255,23,68,0.06); border:1px solid rgba(255,23,68,0.25); }
+  #result-section.out-result::before { background:var(--out); }
+  .result-label { font-family:'Share Tech Mono',monospace; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--muted); }
+  .result-verdict { font-family:'Orbitron',monospace; font-size:56px; font-weight:900; letter-spacing:6px; line-height:1; }
+  .in-result .result-verdict { color:var(--in); text-shadow:0 0 30px rgba(0,229,255,0.5); }
+  .out-result .result-verdict { color:var(--out); text-shadow:0 0 30px rgba(255,23,68,0.5); }
+  .result-detail { font-size:11px; color:var(--muted); font-family:'Share Tech Mono',monospace; letter-spacing:1px; }
+  .result-distance { font-size:14px; color:var(--text); font-family:'Share Tech Mono',monospace; letter-spacing:1px; }
 </style>
 </head>
 <body>
@@ -427,186 +160,372 @@
     <div class="hawk-eye-logo"></div>
     <div>
       <h1>Hawk-Eye Judge</h1>
-      <div class="header-tag">Ball Tracking System v1.0</div>
+      <div class="header-tag">Ball Tracking System v2.0</div>
     </div>
   </div>
-  <div class="live-indicator">
-    <div class="live-dot"></div>
-    SYSTEM ONLINE
-  </div>
+  <div class="live-indicator"><div class="live-dot"></div> SYSTEM ONLINE</div>
 </header>
 
 <div class="steps">
-  <div class="step active" id="s1"><span class="step-num">1</span> Lataa video</div>
+  <div class="step active" id="s1"><span class="step-num">1</span> Lataa videot</div>
   <span class="step-sep">›</span>
-  <div class="step" id="s2"><span class="step-num">2</span> Merkitse kenttä</div>
+  <div class="step" id="s2"><span class="step-num">2</span> Synkronointi</div>
   <span class="step-sep">›</span>
-  <div class="step" id="s3"><span class="step-num">3</span> Merkitse pallo</div>
+  <div class="step" id="s3"><span class="step-num">3</span> Merkitse kenttä</div>
   <span class="step-sep">›</span>
-  <div class="step" id="s4"><span class="step-num">4</span> Tulos</div>
+  <div class="step" id="s4"><span class="step-num">4</span> Merkitse pallo</div>
+  <span class="step-sep">›</span>
+  <div class="step" id="s5"><span class="step-num">5</span> Tulos</div>
 </div>
 
 <main>
 
-  <!-- Step 1: Upload -->
-  <div id="upload-zone" onclick="document.getElementById('file-input').click()">
-    <div class="upload-icon">🎾</div>
-    <div class="upload-label">Load Video</div>
-    <div class="upload-hint">TAP TO SELECT / DRAG &amp; DROP</div>
-    <div class="upload-hint" style="margin-top:2px">MP4 · MOV · AVI — all formats supported</div>
-    <input type="file" id="file-input" accept="video/*" capture="environment">
+  <!-- VAIHE 1: Lataa videot -->
+  <div id="sync-section" style="display:flex;flex-direction:column;gap:14px">
+    <div class="sync-intro">
+      <div class="sync-title">Lataa kameravideos</div>
+      <div class="sync-desc">
+        Lataa jokaisen puhelimen video alla oleviin paikkoihin.<br>
+        <span>Muista: taputa kädet yhteen ennen peliä</span> — sovellus löytää sen äänestä ja synkronoi videot automaattisesti.
+      </div>
+    </div>
+
+    <div class="cam-slots">
+      <div class="cam-slot" id="slot-0" onclick="document.getElementById('file-0').click()">
+        <div class="cam-slot-num">1</div>
+        <div class="cam-slot-info">
+          <div class="cam-slot-label">CAM 1 — Vasen takakulma</div>
+          <div class="cam-slot-sub" id="slot-sub-0">Napauta ladataksesi video</div>
+        </div>
+        <div class="cam-slot-status" id="slot-status-0" style="color:var(--muted)">—</div>
+      </div>
+      <div class="cam-slot" id="slot-1" onclick="document.getElementById('file-1').click()">
+        <div class="cam-slot-num">2</div>
+        <div class="cam-slot-info">
+          <div class="cam-slot-label">CAM 2 — Oikea takakulma</div>
+          <div class="cam-slot-sub" id="slot-sub-1">Napauta ladataksesi video</div>
+        </div>
+        <div class="cam-slot-status" id="slot-status-1" style="color:var(--muted)">—</div>
+      </div>
+      <div class="cam-slot" id="slot-2" onclick="document.getElementById('file-2').click()">
+        <div class="cam-slot-num">3</div>
+        <div class="cam-slot-info">
+          <div class="cam-slot-label">CAM 3 — Vasen etukulma</div>
+          <div class="cam-slot-sub" id="slot-sub-2">Napauta ladataksesi video</div>
+        </div>
+        <div class="cam-slot-status" id="slot-status-2" style="color:var(--muted)">—</div>
+      </div>
+      <div class="cam-slot" id="slot-3" onclick="document.getElementById('file-3').click()">
+        <div class="cam-slot-num">4</div>
+        <div class="cam-slot-info">
+          <div class="cam-slot-label">CAM 4 — Oikea etukulma</div>
+          <div class="cam-slot-sub" id="slot-sub-3">Napauta ladataksesi video</div>
+        </div>
+        <div class="cam-slot-status" id="slot-status-3" style="color:var(--muted)">—</div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <button class="btn btn-primary" id="sync-btn" onclick="startSync()" disabled>Synkronoi videot →</button>
+      <button class="btn btn-secondary" onclick="skipToSingleCam()" style="font-size:10px">Käytä vain 1 kameraa</button>
+    </div>
+
+    <div class="info-card">
+      <strong>Synkronointiohje</strong><br>
+      Ennen peliä: käynnistä kuvaus kaikissa puhelimissa.<br>
+      Taputa <span style="color:var(--gold)">kerran voimakkaasti kädet yhteen</span> kameran edessä.<br>
+      Sovellus löytää tämän hetken automaattisesti äänestä.
+    </div>
   </div>
 
-  <div class="info-card" id="camera-selector" style="display:none">
-    <strong>Montako kameraa käytössä tänään?</strong>
-    <div class="cam-row" style="margin-top:10px">
-      <button class="cam-btn selected" onclick="selectCams(1,this)">1 kamera</button>
-      <button class="cam-btn" onclick="selectCams(2,this)">2 kameraa</button>
-      <button class="cam-btn" onclick="selectCams(4,this)">4 kameraa</button>
+  <!-- VAIHE 2: Synkronointitulos -->
+  <div id="sync-result-section" style="display:none;flex-direction:column;gap:12px">
+    <div class="sync-status-row">
+      <span class="sync-badge syncing" id="sync-badge"><span class="dot"></span> Analysoidaan</span>
+      <button class="btn btn-danger" onclick="resetSync()" style="padding:6px 12px;font-size:10px">Aloita alusta</button>
     </div>
-    <div style="margin-top:10px;font-size:12px;color:var(--muted)" id="cam-hint">
-      Aloitetaan yhdellä — voit lisätä loput myöhemmin.
-    </div>
+    <div id="sync-bars" style="display:flex;flex-direction:column;gap:6px"></div>
+    <div class="info-card" id="sync-result-info"><strong>Analysoidaan ääniraitoja...</strong></div>
+    <button class="btn btn-primary" id="proceed-btn" onclick="proceedToAnalysis()" disabled style="display:none">Jatka analyysiin →</button>
   </div>
 
-  <!-- Step 2+3: Video + canvas -->
+  <!-- VAIHE 3+4: Video -->
   <div id="video-section">
     <div class="phase-row">
       <span class="mode-badge mode-court" id="phase-badge"><span class="dot"></span> Merkitse kenttä</span>
-      <button class="btn btn-danger" onclick="resetAll()" style="padding:6px 12px;font-size:12px">Aloita alusta</button>
+      <button class="btn btn-danger" onclick="resetAll()" style="padding:6px 12px;font-size:11px">Aloita alusta</button>
     </div>
-
     <div id="video-wrap">
       <video id="vid" playsinline preload="metadata"></video>
       <canvas id="court-canvas"></canvas>
       <canvas id="click-canvas"></canvas>
     </div>
-
     <div class="scrubber-wrap">
       <button class="btn btn-secondary" id="play-btn" onclick="togglePlay()" style="padding:8px 14px;font-size:13px">▶</button>
       <input type="range" id="scrubber" min="0" max="100" step="0.1" value="0">
       <span class="time-label" id="time-label">0.00 / 0.00</span>
     </div>
-
     <div class="controls">
       <button class="btn btn-secondary" onclick="stepFrame(-1)">‹ Kehys</button>
       <button class="btn btn-secondary" onclick="stepFrame(1)">Kehys ›</button>
       <button class="btn btn-primary" id="action-btn" onclick="nextPhase()" disabled>Merkitse kenttä →</button>
     </div>
-
     <div class="info-card" id="instructions">
-      <strong>Vaihe 2 — Merkitse kenttä</strong><br>
+      <strong>Vaihe 3 — Merkitse kenttä</strong><br>
       Napauta neljä kenttäkulmaa järjestyksessä:<br>
-      <span style="color:var(--accent)">1. Vasen takakulma → 2. Oikea takakulma → 3. Oikea etukulma → 4. Vasen etukulma</span><br><br>
-      Pysäytä video hetkeen, jossa kenttälinjat näkyvät selvästi.
+      <span style="color:var(--accent)">1. Vasen takakulma → 2. Oikea takakulma → 3. Oikea etukulma → 4. Vasen etukulma</span>
     </div>
   </div>
 
+  <!-- TULOS -->
   <div id="result-section">
     <div class="result-label">— Analysis Complete —</div>
     <div class="result-verdict" id="verdict-text"></div>
     <div class="result-distance" id="result-dist"></div>
     <div class="result-detail" id="result-detail"></div>
     <div style="display:flex;gap:10px;margin-top:8px">
-      <button class="btn btn-secondary" onclick="newAnalysis()">New Analysis</button>
-      <button class="btn btn-primary" onclick="shareResult()">Share Result</button>
+      <button class="btn btn-secondary" onclick="newAnalysis()">Uusi analyysi</button>
+      <button class="btn btn-primary" onclick="shareResult()">Jaa tulos</button>
     </div>
   </div>
 
 </main>
+
+<input type="file" id="file-0" accept="video/*" style="display:none">
+<input type="file" id="file-1" accept="video/*" style="display:none">
+<input type="file" id="file-2" accept="video/*" style="display:none">
+<input type="file" id="file-3" accept="video/*" style="display:none">
+<input type="file" id="file-single" accept="video/*" style="display:none">
 
 <script>
 const vid = document.getElementById('vid');
 const courtCanvas = document.getElementById('court-canvas');
 const clickCanvas = document.getElementById('click-canvas');
 const cc = courtCanvas.getContext('2d');
-const kc = clickCanvas.getContext('2d');
 
-let phase = 0; // 0=upload, 1=court, 2=ball, 3=result
+let phase = 0;
 let courtPoints = [];
 let ballPoint = null;
-let numCams = 1;
+let loadedVideos = [null, null, null, null];
+let syncOffsets = [0, 0, 0, 0];
+let bestCamIndex = 0;
 
-// File input
-document.getElementById('file-input').addEventListener('change', e => {
+// Lataa videot slotteihin
+[0,1,2,3].forEach(i => {
+  document.getElementById('file-' + i).addEventListener('change', e => {
+    const f = e.target.files[0];
+    if (!f) return;
+    loadedVideos[i] = f;
+    document.getElementById('slot-' + i).classList.add('loaded');
+    const name = f.name.length > 26 ? f.name.substring(0,23)+'...' : f.name;
+    document.getElementById('slot-sub-' + i).textContent = name;
+    document.getElementById('slot-status-' + i).textContent = '✓';
+    document.getElementById('slot-status-' + i).style.color = '#00e5a0';
+    const count = loadedVideos.filter(v => v !== null).length;
+    const btn = document.getElementById('sync-btn');
+    if (count >= 2) {
+      btn.disabled = false;
+      btn.textContent = `Synkronoi ${count} videota →`;
+    }
+  });
+});
+
+// Yhden kameran reitti
+document.getElementById('file-single').addEventListener('change', e => {
   const f = e.target.files[0];
   if (!f) return;
-  const url = URL.createObjectURL(f);
+  document.getElementById('sync-section').style.display = 'none';
+  loadVideo(f);
+});
+
+function skipToSingleCam() {
+  document.getElementById('file-single').click();
+}
+
+function loadVideo(file) {
+  const url = URL.createObjectURL(file);
   vid.src = url;
   vid.load();
   vid.onloadedmetadata = () => {
-    document.getElementById('upload-zone').style.display = 'none';
-    document.getElementById('camera-selector').style.display = 'block';
     document.getElementById('video-section').style.display = 'flex';
     document.getElementById('video-section').style.flexDirection = 'column';
     document.getElementById('scrubber').max = vid.duration;
     updateTimeLabel();
     resizeCanvases();
     phase = 1;
-    setStep(2);
+    setStep(3);
     document.getElementById('action-btn').disabled = true;
     updateBadge();
   };
-});
-
-function selectCams(n, btn) {
-  numCams = n;
-  document.querySelectorAll('.cam-btn').forEach(b => b.classList.remove('selected'));
-  btn.classList.add('selected');
-  const hints = {
-    1: 'Aloitetaan yhdellä — voit lisätä loput myöhemmin.',
-    2: 'Hyvä! Kaksi kameraa parantaa tarkkuutta merkittävästi.',
-    4: 'Täydellinen kokoonpano! Analysoi yksi video kerrallaan.'
-  };
-  document.getElementById('cam-hint').textContent = hints[n];
 }
 
-// Canvas resize
+// === ÄÄNISYNKRONOINTI ===
+async function startSync() {
+  document.getElementById('sync-section').style.display = 'none';
+  const rs = document.getElementById('sync-result-section');
+  rs.style.display = 'flex';
+  rs.style.flexDirection = 'column';
+  setStep(2);
+
+  const barsEl = document.getElementById('sync-bars');
+  barsEl.innerHTML = '';
+  loadedVideos.forEach((v, i) => {
+    if (!v) return;
+    barsEl.innerHTML += `<div class="sync-bar">
+      <div class="sync-bar-label">CAM ${i+1}</div>
+      <div class="sync-bar-track"><div class="sync-bar-fill" id="fill-${i}" style="width:5%"></div></div>
+      <div class="sync-bar-time" id="bartime-${i}">analysoidaan...</div>
+    </div>`;
+  });
+
+  const peakTimes = [];
+  for (let i = 0; i < 4; i++) {
+    if (!loadedVideos[i]) continue;
+    const peak = await findAudioPeak(loadedVideos[i], i);
+    peakTimes.push({ index: i, peak });
+    document.getElementById('fill-' + i).classList.add('peak');
+    document.getElementById('bartime-' + i).textContent = peak >= 0 ? peak.toFixed(3) + 's' : 'ei löydy';
+  }
+
+  const validPeaks = peakTimes.filter(p => p.peak >= 0);
+
+  if (validPeaks.length < 2) {
+    showSyncError();
+    return;
+  }
+
+  const refPeak = validPeaks[0].peak;
+  validPeaks.forEach(p => { syncOffsets[p.index] = (p.peak - refPeak) * 1000; });
+  bestCamIndex = validPeaks[0].index;
+
+  const maxOffset = Math.max(...validPeaks.map(p => Math.abs(p.peak - refPeak) * 1000));
+
+  document.getElementById('sync-badge').className = 'sync-badge synced';
+  document.getElementById('sync-badge').innerHTML = '<span style="width:5px;height:5px;border-radius:50%;background:currentColor;display:inline-block"></span> Synkronoitu';
+
+  let quality, qualityColor;
+  if (maxOffset < 50) { quality = 'Erinomainen — alle 50 ms'; qualityColor = '#00e5a0'; }
+  else if (maxOffset < 150) { quality = 'Hyvä tarkkuus'; qualityColor = 'var(--gold)'; }
+  else { quality = 'Kohtalainen — yritä selkeämmällä taputuksella'; qualityColor = 'var(--out)'; }
+
+  document.getElementById('sync-result-info').innerHTML =
+    `<strong>Synkronointi onnistui!</strong><br>
+    Taputuspiikki löytyi ${validPeaks.length}/${loadedVideos.filter(v=>v).length} videosta.<br>
+    Suurin aikaero: <span style="color:var(--gold)">${maxOffset.toFixed(0)} ms</span><br>
+    <span style="color:${qualityColor}">${quality}</span>`;
+
+  const pb = document.getElementById('proceed-btn');
+  pb.style.display = 'block';
+  pb.disabled = false;
+}
+
+async function findAudioPeak(file, camIndex) {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = async e => {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const buffer = await ctx.decodeAudioData(e.target.result.slice(0));
+        const data = buffer.getChannelData(0);
+        const sr = buffer.sampleRate;
+        const win = Math.floor(sr * 0.01);
+        let maxRMS = 0, maxPos = 0;
+        const steps = Math.floor(data.length / win);
+        for (let s = 0; s < steps; s++) {
+          const start = s * win;
+          let sum = 0;
+          for (let j = 0; j < win; j++) sum += data[start+j] * data[start+j];
+          const rms = Math.sqrt(sum / win);
+          if (rms > maxRMS) { maxRMS = rms; maxPos = start; }
+          if (s % 100 === 0) {
+            const pct = Math.min(95, 5 + (s / steps) * 90);
+            const el = document.getElementById('fill-' + camIndex);
+            if (el) el.style.width = pct + '%';
+          }
+        }
+        await ctx.close();
+        resolve(maxPos / sr);
+      } catch(err) { resolve(-1); }
+    };
+    reader.onerror = () => resolve(-1);
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+function showSyncError() {
+  document.getElementById('sync-badge').className = 'sync-badge error';
+  document.getElementById('sync-badge').textContent = 'Synkronointi epäonnistui';
+  document.getElementById('sync-result-info').innerHTML =
+    `<strong style="color:var(--out)">Taputuspistettä ei löydetty</strong><br>
+    Varmista että tapautat selkeästi ennen kuvauksen alkua.<br>
+    Voit jatkaa yhdellä videolla manuaalisesti.`;
+  const pb = document.getElementById('proceed-btn');
+  pb.style.display = 'block';
+  pb.disabled = false;
+  pb.textContent = 'Jatka yhdellä videolla →';
+}
+
+function proceedToAnalysis() {
+  document.getElementById('sync-result-section').style.display = 'none';
+  loadVideo(loadedVideos[bestCamIndex]);
+}
+
+function resetSync() {
+  loadedVideos = [null,null,null,null];
+  syncOffsets = [0,0,0,0];
+  document.getElementById('sync-result-section').style.display = 'none';
+  const ss = document.getElementById('sync-section');
+  ss.style.display = 'flex';
+  ss.style.flexDirection = 'column';
+  [0,1,2,3].forEach(i => {
+    document.getElementById('slot-'+i).classList.remove('loaded');
+    document.getElementById('slot-sub-'+i).textContent = 'Napauta ladataksesi video';
+    document.getElementById('slot-status-'+i).textContent = '—';
+    document.getElementById('slot-status-'+i).style.color = 'var(--muted)';
+  });
+  document.getElementById('sync-btn').disabled = true;
+  document.getElementById('sync-btn').textContent = 'Synkronoi videot →';
+  setStep(1);
+}
+
+// === CANVAS ===
 function resizeCanvases() {
   const rect = vid.getBoundingClientRect();
+  if (!rect.width) return;
   courtCanvas.width = clickCanvas.width = rect.width;
   courtCanvas.height = clickCanvas.height = rect.height;
   drawAll();
 }
-
 window.addEventListener('resize', resizeCanvases);
 vid.addEventListener('loadeddata', resizeCanvases);
 
-// Playback
+// === TOISTO ===
 function togglePlay() {
   if (vid.paused) { vid.play(); document.getElementById('play-btn').textContent = '⏸'; }
   else { vid.pause(); document.getElementById('play-btn').textContent = '▶'; }
 }
-
 vid.addEventListener('timeupdate', () => {
   document.getElementById('scrubber').value = vid.currentTime;
-  updateTimeLabel();
-  drawAll();
+  updateTimeLabel(); drawAll();
 });
-
 vid.addEventListener('pause', () => document.getElementById('play-btn').textContent = '▶');
-
-document.getElementById('scrubber').addEventListener('input', e => {
-  vid.currentTime = parseFloat(e.target.value);
-});
-
+document.getElementById('scrubber').addEventListener('input', e => { vid.currentTime = parseFloat(e.target.value); });
 function updateTimeLabel() {
   const fmt = t => `${Math.floor(t/60).toString().padStart(2,'0')}:${(t%60).toFixed(2).padStart(5,'0')}`;
   document.getElementById('time-label').textContent = `${fmt(vid.currentTime)} / ${fmt(vid.duration||0)}`;
 }
-
 function stepFrame(dir) {
   vid.pause();
   vid.currentTime = Math.max(0, Math.min(vid.duration, vid.currentTime + dir/30));
 }
 
-// Click handling
+// === KLIKKAUS ===
 clickCanvas.addEventListener('click', handleClick);
 clickCanvas.addEventListener('touchend', e => {
   e.preventDefault();
   const t = e.changedTouches[0];
   const rect = clickCanvas.getBoundingClientRect();
-  handleClick({ clientX: t.clientX, clientY: t.clientY, _rect: rect });
+  handleClick({ clientX:t.clientX, clientY:t.clientY, _rect:rect });
 });
 
 function handleClick(e) {
@@ -614,15 +533,13 @@ function handleClick(e) {
   const rect = e._rect || clickCanvas.getBoundingClientRect();
   const x = (e.clientX - rect.left) / rect.width;
   const y = (e.clientY - rect.top) / rect.height;
-
   if (phase === 1) {
     if (courtPoints.length < 4) {
       courtPoints.push({x, y});
       if (courtPoints.length === 4) {
         document.getElementById('action-btn').disabled = false;
         document.getElementById('action-btn').textContent = 'Merkitse pallo →';
-        document.getElementById('instructions').innerHTML =
-          '<strong>Kenttä merkitty!</strong> Nyt paina "Merkitse pallo" tai korjaa pisteitä napauttamalla niitä.';
+        document.getElementById('instructions').innerHTML = '<strong>Kenttä merkitty!</strong> Paina "Merkitse pallo" jatkaaksesi.';
       }
     }
     drawAll();
@@ -634,238 +551,138 @@ function handleClick(e) {
   }
 }
 
-// Next phase
 function nextPhase() {
   if (phase === 1 && courtPoints.length === 4) {
-    phase = 2;
-    setStep(3);
-    updateBadge();
+    phase = 2; setStep(4); updateBadge();
     document.getElementById('action-btn').disabled = true;
     document.getElementById('action-btn').textContent = 'Laske tulos →';
     document.getElementById('instructions').innerHTML =
-      '<strong>Vaihe 3 — Merkitse pomppupiste</strong><br>' +
-      'Selaa videota hetkeen, jolloin pallo osuu maahan. Napauta tarkkaa pomppupistettä.';
+      '<strong>Vaihe 4 — Merkitse pomppupiste</strong><br>Selaa videota hetkeen jolloin pallo osuu maahan. Napauta osumapistettä.';
   } else if (phase === 2 && ballPoint) {
-    phase = 3;
-    calculateResult();
+    phase = 3; calculateResult();
   }
 }
 
 function updateBadge() {
-  const badge = document.getElementById('phase-badge');
-  if (phase === 1) {
-    badge.className = 'mode-badge mode-court';
-    badge.innerHTML = '<span class="dot"></span> Merkitse kenttä';
-  } else if (phase === 2) {
-    badge.className = 'mode-badge mode-ball';
-    badge.innerHTML = '<span class="dot"></span> Merkitse pallo';
-  }
+  const b = document.getElementById('phase-badge');
+  if (phase === 1) { b.className='mode-badge mode-court'; b.innerHTML='<span class="dot"></span> Merkitse kenttä'; }
+  else if (phase === 2) { b.className='mode-badge mode-ball'; b.innerHTML='<span class="dot"></span> Merkitse pallo'; }
 }
 
 function setStep(n) {
-  for (let i = 1; i <= 4; i++) {
-    const el = document.getElementById('s'+i);
-    el.className = 'step' + (i < n ? ' done' : i === n ? ' active' : '');
+  for (let i=1; i<=5; i++) {
+    document.getElementById('s'+i).className = 'step'+(i<n?' done':i===n?' active':'');
   }
 }
 
-// Draw everything
+// === PIIRTO ===
 function drawAll() {
   if (!courtCanvas.width) return;
-  cc.clearRect(0, 0, courtCanvas.width, courtCanvas.height);
+  cc.clearRect(0,0,courtCanvas.width,courtCanvas.height);
+  const W=courtCanvas.width, H=courtCanvas.height;
+  const C = p => ({x:p.x*W, y:p.y*H});
 
-  const W = courtCanvas.width, H = courtCanvas.height;
-  const toCanvas = p => ({ x: p.x * W, y: p.y * H });
-
-  // Draw court polygon
   if (courtPoints.length >= 2) {
     cc.beginPath();
-    const p0 = toCanvas(courtPoints[0]);
-    cc.moveTo(p0.x, p0.y);
-    for (let i = 1; i < courtPoints.length; i++) {
-      const p = toCanvas(courtPoints[i]);
-      cc.lineTo(p.x, p.y);
-    }
-    if (courtPoints.length === 4) {
-      cc.closePath();
-      cc.fillStyle = 'rgba(0,184,255,0.05)';
-      cc.fill();
-      cc.strokeStyle = 'rgba(0,184,255,0.8)';
-    } else {
-      cc.strokeStyle = 'rgba(0,184,255,0.5)';
-    }
-    cc.lineWidth = 2;
-    cc.setLineDash([6, 3]);
-    cc.stroke();
-    cc.setLineDash([]);
+    const p0=C(courtPoints[0]); cc.moveTo(p0.x,p0.y);
+    for (let i=1;i<courtPoints.length;i++){const p=C(courtPoints[i]);cc.lineTo(p.x,p.y);}
+    if (courtPoints.length===4) { cc.closePath(); cc.fillStyle='rgba(0,184,255,0.05)'; cc.fill(); cc.strokeStyle='rgba(0,184,255,0.8)'; }
+    else cc.strokeStyle='rgba(0,184,255,0.5)';
+    cc.lineWidth=2; cc.setLineDash([6,3]); cc.stroke(); cc.setLineDash([]);
   }
 
-  // Draw court corner dots
-  const labels = ['TK-vasen', 'TK-oikea', 'ET-oikea', 'ET-vasen'];
-  courtPoints.forEach((p, i) => {
-    const c = toCanvas(p);
-    cc.beginPath();
-    cc.arc(c.x, c.y, 7, 0, Math.PI * 2);
-    cc.fillStyle = '#00b8ff';
-    cc.fill();
-    cc.fillStyle = '#000';
-    cc.font = 'bold 9px Share Tech Mono';
-    cc.textAlign = 'center';
-    cc.fillText(i + 1, c.x, c.y + 3.5);
-    cc.fillStyle = 'rgba(0,184,255,0.9)';
-    cc.font = '10px Share Tech Mono';
-    cc.fillText(labels[i], c.x, c.y - 12);
+  const labels=['TK-vasen','TK-oikea','ET-oikea','ET-vasen'];
+  courtPoints.forEach((p,i) => {
+    const c=C(p);
+    cc.beginPath(); cc.arc(c.x,c.y,7,0,Math.PI*2); cc.fillStyle='#00b8ff'; cc.fill();
+    cc.fillStyle='#000'; cc.font='bold 9px monospace'; cc.textAlign='center'; cc.fillText(i+1,c.x,c.y+3.5);
+    cc.fillStyle='rgba(0,184,255,0.9)'; cc.font='10px monospace'; cc.fillText(labels[i],c.x,c.y-12);
   });
 
-  if (courtPoints.length < 4 && phase === 1) {
-    const nextLabels = ['Napauta: takakulma vasen', 'Napauta: takakulma oikea', 'Napauta: etukulma oikea', 'Napauta: etukulma vasen'];
-    cc.fillStyle = 'rgba(0,184,255,0.6)';
-    cc.font = '12px Share Tech Mono';
-    cc.textAlign = 'center';
-    cc.fillText(nextLabels[courtPoints.length], W/2, H - 16);
+  if (courtPoints.length<4 && phase===1) {
+    const nl=['Napauta: takakulma vasen','Napauta: takakulma oikea','Napauta: etukulma oikea','Napauta: etukulma vasen'];
+    cc.fillStyle='rgba(0,184,255,0.6)'; cc.font='12px monospace'; cc.textAlign='center';
+    cc.fillText(nl[courtPoints.length],W/2,H-16);
   }
 
   if (ballPoint) {
-    const b = toCanvas(ballPoint);
-    cc.beginPath();
-    cc.arc(b.x + 2, b.y + 2, 10, 0, Math.PI * 2);
-    cc.fillStyle = 'rgba(0,0,0,0.4)';
-    cc.fill();
-    cc.beginPath();
-    cc.arc(b.x, b.y, 10, 0, Math.PI * 2);
-    cc.fillStyle = '#ffc107';
-    cc.fill();
-    cc.strokeStyle = '#000';
-    cc.lineWidth = 2;
-    cc.stroke();
-    cc.strokeStyle = '#000';
-    cc.lineWidth = 2;
-    cc.beginPath();
-    cc.moveTo(b.x-5,b.y-5); cc.lineTo(b.x+5,b.y+5);
-    cc.moveTo(b.x+5,b.y-5); cc.lineTo(b.x-5,b.y+5);
-    cc.stroke();
+    const b=C(ballPoint);
+    cc.beginPath(); cc.arc(b.x+2,b.y+2,10,0,Math.PI*2); cc.fillStyle='rgba(0,0,0,0.4)'; cc.fill();
+    cc.beginPath(); cc.arc(b.x,b.y,10,0,Math.PI*2); cc.fillStyle='#ffc107'; cc.fill();
+    cc.strokeStyle='#000'; cc.lineWidth=2; cc.stroke();
+    cc.beginPath(); cc.moveTo(b.x-5,b.y-5); cc.lineTo(b.x+5,b.y+5); cc.moveTo(b.x+5,b.y-5); cc.lineTo(b.x-5,b.y+5); cc.stroke();
   }
 }
 
-// Result calculation using point-in-polygon
+// === TULOS ===
 function calculateResult() {
-  if (courtPoints.length < 4 || !ballPoint) return;
-
-  const inside = pointInPolygon(ballPoint, courtPoints);
-  const dist = distToPolygon(ballPoint, courtPoints);
-  const distCm = Math.round(dist * 2600); // rough scale for a tennis court
-
-  showResult(inside, distCm);
+  if (courtPoints.length<4||!ballPoint) return;
+  const inside = pointInPolygon(ballPoint,courtPoints);
+  const dist = distToPolygon(ballPoint,courtPoints);
+  const distCm = Math.round(dist*2600);
+  showResult(inside,distCm);
 }
 
-function pointInPolygon(point, polygon) {
-  let inside = false;
-  const {x, y} = point;
-  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-    const xi = polygon[i].x, yi = polygon[i].y;
-    const xj = polygon[j].x, yj = polygon[j].y;
-    if (((yi > y) !== (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) {
-      inside = !inside;
-    }
+function pointInPolygon(pt,poly) {
+  let inside=false;
+  const {x,y}=pt;
+  for(let i=0,j=poly.length-1;i<poly.length;j=i++){
+    const xi=poly[i].x,yi=poly[i].y,xj=poly[j].x,yj=poly[j].y;
+    if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi)) inside=!inside;
   }
   return inside;
 }
 
-function distToPolygon(pt, polygon) {
-  let minDist = Infinity;
-  for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-    const d = pointToSegDist(pt, polygon[j], polygon[i]);
-    if (d < minDist) minDist = d;
-  }
-  return minDist;
+function distToPolygon(pt,poly) {
+  let min=Infinity;
+  for(let i=0,j=poly.length-1;i<poly.length;j=i++){const d=ptSegDist(pt,poly[j],poly[i]);if(d<min)min=d;}
+  return min;
 }
 
-function pointToSegDist(p, a, b) {
-  const dx = b.x - a.x, dy = b.y - a.y;
-  const lenSq = dx*dx + dy*dy;
-  let t = lenSq > 0 ? ((p.x-a.x)*dx + (p.y-a.y)*dy) / lenSq : 0;
-  t = Math.max(0, Math.min(1, t));
-  const nx = a.x + t*dx, ny = a.y + t*dy;
-  return Math.sqrt((p.x-nx)**2 + (p.y-ny)**2);
+function ptSegDist(p,a,b) {
+  const dx=b.x-a.x,dy=b.y-a.y,len=dx*dx+dy*dy;
+  let t=len>0?((p.x-a.x)*dx+(p.y-a.y)*dy)/len:0;
+  t=Math.max(0,Math.min(1,t));
+  return Math.sqrt((p.x-a.x-t*dx)**2+(p.y-a.y-t*dy)**2);
 }
 
-function showResult(inside, distCm) {
-  document.getElementById('video-section').style.display = 'none';
-  document.getElementById('instructions').style.display = 'none';
-
-  const rs = document.getElementById('result-section');
-  rs.style.display = 'flex';
-  rs.className = inside ? 'in-result' : 'out-result';
-
-  document.getElementById('verdict-text').textContent = inside ? 'IN' : 'OUT';
-  document.getElementById('result-dist').textContent =
-    inside
-      ? `${distCm} cm inside the line`
-      : `${distCm} cm outside the line`;
-  document.getElementById('result-detail').textContent =
-    `CAM_COUNT: ${numCams} · MODE: MANUAL · CONFIDENCE: EST`;
-
-  setStep(4);
+function showResult(inside,distCm) {
+  document.getElementById('video-section').style.display='none';
+  const rs=document.getElementById('result-section');
+  rs.style.display='flex'; rs.className=inside?'in-result':'out-result';
+  document.getElementById('verdict-text').textContent=inside?'IN':'OUT';
+  document.getElementById('result-dist').textContent=inside?`${distCm} cm inside the line`:`${distCm} cm outside the line`;
+  const camCount=loadedVideos.filter(v=>v!==null).length||1;
+  const maxOff=Math.round(Math.max(...syncOffsets.map(Math.abs)));
+  document.getElementById('result-detail').textContent=`CAM_COUNT: ${camCount} · SYNC: ${camCount>1?maxOff+'ms':'N/A'} · MODE: MANUAL`;
+  setStep(5);
 }
 
 function newAnalysis() {
-  courtPoints = [];
-  ballPoint = null;
-  phase = 2;
-  setStep(3);
-  updateBadge();
-  document.getElementById('result-section').style.display = 'none';
-  document.getElementById('video-section').style.display = 'flex';
-  document.getElementById('video-section').style.flexDirection = 'column';
-  document.getElementById('instructions').style.display = 'block';
-  document.getElementById('instructions').innerHTML =
-    '<strong>Vaihe 2 — Merkitse kenttä uudelleen</strong><br>Napauta neljä kenttäkulmaa.';
-  document.getElementById('action-btn').disabled = true;
-  document.getElementById('action-btn').textContent = 'Merkitse kenttä →';
+  courtPoints=[]; ballPoint=null; phase=2; setStep(4); updateBadge();
+  document.getElementById('result-section').style.display='none';
+  document.getElementById('video-section').style.display='flex';
+  document.getElementById('video-section').style.flexDirection='column';
+  document.getElementById('instructions').innerHTML='<strong>Merkitse kenttä uudelleen</strong><br>Napauta neljä kenttäkulmaa.';
+  document.getElementById('action-btn').disabled=true;
+  document.getElementById('action-btn').textContent='Merkitse kenttä →';
   drawAll();
 }
 
 function resetAll() {
-  courtPoints = [];
-  ballPoint = null;
-  phase = 1;
-  setStep(2);
-  updateBadge();
-  document.getElementById('result-section').style.display = 'none';
-  document.getElementById('instructions').style.display = 'block';
-  document.getElementById('instructions').innerHTML =
-    '<strong>Vaihe 2 — Merkitse kenttä</strong><br>' +
-    'Napauta neljä kenttäkulmaa järjestyksessä:<br>' +
-    '<span style="color:var(--accent)">1. Vasen takakulma → 2. Oikea takakulma → 3. Oikea etukulma → 4. Vasen etukulma</span>';
-  document.getElementById('action-btn').disabled = true;
-  document.getElementById('action-btn').textContent = 'Merkitse kenttä →';
-  drawAll();
+  courtPoints=[]; ballPoint=null; phase=0;
+  document.getElementById('result-section').style.display='none';
+  document.getElementById('video-section').style.display='none';
+  resetSync();
 }
 
 function shareResult() {
-  const verdict = document.getElementById('verdict-text').textContent;
-  const dist = document.getElementById('result-dist').textContent;
-  const text = `Tennis Judge: ${verdict} — ${dist}`;
-  if (navigator.share) {
-    navigator.share({ title: 'Tennis Judge', text });
-  } else {
-    navigator.clipboard.writeText(text).then(() => alert('Tulos kopioitu leikepöydälle!'));
-  }
+  const v=document.getElementById('verdict-text').textContent;
+  const d=document.getElementById('result-dist').textContent;
+  const text=`Hawk-Eye Judge: ${v} — ${d}`;
+  if(navigator.share) navigator.share({title:'Hawk-Eye Judge',text});
+  else navigator.clipboard.writeText(text).then(()=>alert('Tulos kopioitu!'));
 }
-
-// Drag and drop
-const uz = document.getElementById('upload-zone');
-uz.addEventListener('dragover', e => { e.preventDefault(); uz.classList.add('drag'); });
-uz.addEventListener('dragleave', () => uz.classList.remove('drag'));
-uz.addEventListener('drop', e => {
-  e.preventDefault();
-  uz.classList.remove('drag');
-  const f = e.dataTransfer.files[0];
-  if (f && f.type.startsWith('video/')) {
-    document.getElementById('file-input').files = e.dataTransfer.files;
-    document.getElementById('file-input').dispatchEvent(new Event('change'));
-  }
-});
 </script>
 </body>
 </html>
