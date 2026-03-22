@@ -776,6 +776,7 @@ document.getElementById('manual-upload').addEventListener('change', e => {
 
 function openAnalysis(source) {
   document.getElementById('screen-recording').style.display = 'none';
+  document.getElementById('screen-calib').style.display = 'none';
   document.getElementById('screen-analysis').style.display = 'flex';
   document.getElementById('screen-analysis').style.flexDirection = 'column';
   setStep(3);
@@ -901,6 +902,9 @@ function handleClick(e) {
   const y = (e.clientY-r.top)/r.height;
   ballPoint = {x, y};
   document.getElementById('action-btn').disabled = false;
+  document.getElementById('instructions').innerHTML =
+    '<strong>Pomppupiste merkitty!</strong><br>' +
+    'Paina <span style="color:var(--accent)">Laske tulos</span> tai napauta uudelleen korjataksesi sijaintia.';
   drawAll();
 }
 
