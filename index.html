@@ -158,25 +158,27 @@
     line-height:1.7;
   }
 
-  /* HAASTO-nappi — iso ja näkyvä */
   .haasto-btn {
     width:100%;
-    padding:20px;
-    border-radius:4px; border:2px solid var(--out);
-    background:rgba(255,23,68,0.12);
+    padding:40px 20px;
+    border-radius:8px; border:3px solid var(--out);
+    background:rgba(255,23,68,0.15);
     color:var(--out);
     font-family:'Orbitron',monospace;
-    font-size:18px; font-weight:900;
-    cursor:pointer; letter-spacing:4px; text-transform:uppercase;
+    font-size:34px; font-weight:900;
+    cursor:pointer; letter-spacing:6px; text-transform:uppercase;
     transition:all 0.15s;
+    box-shadow:0 0 30px rgba(255,23,68,0.2), inset 0 0 30px rgba(255,23,68,0.05);
+    position:relative; overflow:hidden;
   }
-  .haasto-btn:hover { background:rgba(255,23,68,0.2); box-shadow:0 0 24px rgba(255,23,68,0.3); }
-  .haasto-btn:active { transform:scale(0.98); animation:pulse-red 0.3s; }
-  .haasto-btn.pressed { background:rgba(255,23,68,0.25); border-color:#ff4444; box-shadow:0 0 30px rgba(255,23,68,0.5); }
+  .haasto-btn::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,transparent,var(--out),transparent); animation:scan 2s linear infinite; }
+  .haasto-btn:hover { background:rgba(255,23,68,0.25); box-shadow:0 0 50px rgba(255,23,68,0.4); transform:scale(1.01); }
+  .haasto-btn:active { transform:scale(0.98); }
+  .haasto-btn.pressed { background:rgba(255,23,68,0.3); border-color:#ff6666; box-shadow:0 0 60px rgba(255,23,68,0.6); color:#ff6666; }
 
   .haasto-sub {
     font-family:'Share Tech Mono',monospace;
-    font-size:10px; color:var(--muted);
+    font-size:11px; color:var(--muted);
     text-align:center; letter-spacing:1px;
     margin-top:-8px;
   }
