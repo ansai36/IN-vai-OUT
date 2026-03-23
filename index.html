@@ -643,13 +643,19 @@
   </div>
 
   <!-- NÄYTTÖ 5: Tulos -->
-  <div id="screen-result">
+  <div id="screen-result" style="padding:16px;">
     <div class="result-card" id="result-card">
       <div class="result-emoji" id="result-emoji">🎾</div>
       <div class="result-verdict" id="verdict-text">IN</div>
       <div class="result-dist" id="result-dist"></div>
-      <div class="result-zone" id="result-zone" style="display:none"></div>
       <div class="result-meta" id="result-detail"></div>
+    </div>
+
+    <!-- Kenttäkaavio saksalaiselle -->
+    <div id="court-diagram-wrap" style="display:none;background:var(--surface);border-radius:16px;padding:14px;border:1.5px solid rgba(134,239,172,0.1);">
+      <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">📍 Osumapaikka kentällä</div>
+      <canvas id="court-diagram" style="width:100%;border-radius:8px;display:block;"></canvas>
+      <div id="zone-label" style="text-align:center;margin-top:8px;font-size:14px;font-weight:800;color:var(--gold);"></div>
     </div>
 
     <div class="result-actions">
@@ -1333,34 +1339,144 @@ function distToPoly(pt,poly){let m=Infinity;for(let i=0,j=poly.length-1;i<poly.l
 function calculateResult() {
   if (!ballPoint || !courtProfile) return;
   const pts = courtProfile.points;
-  let inside, distCm, method;
+  let inside, distCm, method, courtPtMeters;
   const H = computeH(pts);
   if (H) {
     const cp = imgToMeters(ballPoint, H);
-    if (cp) { inside=isInside(cp); distCm=Math.round(distToLines(cp)*100); method='Perspektiivikorjaus'; }
+    if (cp) {
+      inside = isInside(cp);
+      distCm = Math.round(distToLines(cp) * 100);
+      method = 'Perspektiivikorjaus';
+      courtPtMeters = cp;
+    }
   }
-  if (distCm===undefined) {
-    inside=pointInPoly(ballPoint,pts); distCm=Math.round(distToPoly(ballPoint,pts)*2600); method='Peruslaskenta';
+  if (distCm === undefined) {
+    inside = pointInPoly(ballPoint, pts);
+    distCm = Math.round(distToPoly(ballPoint, pts) * 2600);
+    method = 'Peruslaskenta';
   }
-  let zone='';
-  if (courtProfile.netPoint) {
-    const nx=courtProfile.netPoint.x;
-    zone=`${ballPoint.x<nx?'Vasen':'Oikea'} ${ballPoint.y>0.5?'etukenttä':'takakenttä'}`;
+  let zone = '';
+  if (courtProfile.netPoint && courtPtMeters) {
+    const isLeft = courtPtMeters.x < COURT_W / 2;
+    const isNear = courtPtMeters.y > COURT_H / 2;
+    zone = `${isLeft ? 'Vasen' : 'Oikea'} ${isNear ? 'etukenttä' : 'takakenttä'}`;
   }
-  showResult(inside, distCm, zone, method);
+  showResult(inside, distCm, zone, method, courtPtMeters);
 }
 
-function showResult(inside, distCm, zone, method) {
+function showResult(inside, distCm, zone, method, courtPtMeters) {
   showScreen('screen-result');
-  const card=document.getElementById('result-card');
-  card.className='result-card '+(inside?'in-card':'out-card');
+  const card = document.getElementById('result-card');
+  card.className = 'result-card ' + (inside ? 'in-card' : 'out-card');
   document.getElementById('result-emoji').textContent = inside ? '✅' : '❌';
   document.getElementById('verdict-text').textContent = inside ? 'SISÄLLÄ' : 'ULKONA';
   document.getElementById('result-dist').textContent = inside
     ? `${distCm} cm viivasta sisään` : `${distCm} cm viivasta ulos`;
-  const zoneEl = document.getElementById('result-zone');
-  if (zone) { zoneEl.textContent = zone; zoneEl.style.display='block'; } else zoneEl.style.display='none';
   document.getElementById('result-detail').textContent = `Tuomarintorni · ${method}`;
+
+  const diagWrap = document.getElementById('court-diagram-wrap');
+  if (courtPtMeters) {
+    diagWrap.style.display = 'block';
+    setTimeout(() => drawCourtDiagram(courtPtMeters, inside, zone), 50);
+    document.getElementById('zone-label').textContent = zone || '';
+  } else {
+    diagWrap.style.display = 'none';
+  }
+}
+
+function drawCourtDiagram(ballM, inside, zone) {
+  const canvas = document.getElementById('court-diagram');
+  const W = canvas.offsetWidth || 300;
+  const margin = 1.5;
+  const scale = W / (COURT_W + margin * 2);
+  const H = Math.round((COURT_H + margin * 2) * scale);
+  canvas.width = W; canvas.height = H;
+  const ctx = canvas.getContext('2d');
+  const ox = margin * scale, oy = margin * scale;
+  const cw = COURT_W * scale, ch = COURT_H * scale;
+
+  // Tausta
+  ctx.fillStyle = '#0d1f0d'; ctx.fillRect(0, 0, W, H);
+
+  // Kenttäpohja
+  ctx.fillStyle = '#1e4a1e'; ctx.fillRect(ox, oy, cw, ch);
+
+  // Saksalaisen vyöhykkeet
+  const hasNet = courtProfile && courtProfile.netPoint;
+  if (hasNet) {
+    const zoneColors = [
+      'rgba(239,68,68,0.2)',   // A vasen taka
+      'rgba(74,222,128,0.15)', // B oikea taka
+      'rgba(74,222,128,0.15)', // C vasen etu
+      'rgba(239,68,68,0.2)',   // D oikea etu
+    ];
+    const zones = [
+      [ox,       oy,       cw/2, ch/2], // A
+      [ox+cw/2,  oy,       cw/2, ch/2], // B
+      [ox,       oy+ch/2,  cw/2, ch/2], // C
+      [ox+cw/2,  oy+ch/2,  cw/2, ch/2], // D
+    ];
+    zones.forEach((z, i) => {
+      ctx.fillStyle = zoneColors[i];
+      ctx.fillRect(z[0], z[1], z[2], z[3]);
+    });
+
+    // Vyöhyketunnisteet
+    const zoneNames = ['A','B','C','D'];
+    const zoneTextColors = ['rgba(239,68,68,0.55)','rgba(74,222,128,0.45)','rgba(74,222,128,0.45)','rgba(239,68,68,0.55)'];
+    const fs = Math.max(10, Math.round(scale * 1.0));
+    ctx.font = `900 ${fs}px Nunito`;
+    ctx.textAlign = 'center';
+    zones.forEach((z, i) => {
+      ctx.fillStyle = zoneTextColors[i];
+      ctx.fillText(zoneNames[i], z[0]+z[2]/2, z[1]+z[3]/2+fs*0.35);
+    });
+
+    // Pystysuora keskiviiva
+    ctx.strokeStyle = 'rgba(251,191,36,0.5)';
+    ctx.lineWidth = 1.5; ctx.setLineDash([4,3]);
+    ctx.beginPath(); ctx.moveTo(ox+cw/2, oy); ctx.lineTo(ox+cw/2, oy+ch); ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // Kentän ulkoviivat
+  ctx.strokeStyle = 'rgba(240,236,224,0.85)';
+  ctx.lineWidth = 2; ctx.strokeRect(ox, oy, cw, ch);
+
+  // Palveluviivat (haaleat)
+  const sly = COURT_H * 0.215 * scale;
+  ctx.strokeStyle = 'rgba(240,236,224,0.3)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(ox+0.125*cw, oy+sly); ctx.lineTo(ox+0.875*cw, oy+sly);
+  ctx.moveTo(ox+0.125*cw, oy+ch-sly); ctx.lineTo(ox+0.875*cw, oy+ch-sly);
+  ctx.moveTo(ox+0.5*cw, oy+sly); ctx.lineTo(ox+0.5*cw, oy+ch-sly);
+  ctx.stroke();
+
+  // Verkko
+  ctx.strokeStyle = 'rgba(240,236,224,0.9)';
+  ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(ox, oy+ch/2); ctx.lineTo(ox+cw, oy+ch/2); ctx.stroke();
+
+  // Pallo — muunna metreistä pikseleihin
+  const bx = ox + (ballM.x / COURT_W) * cw;
+  const by = oy + (ballM.y / COURT_H) * ch;
+  const r = Math.max(5, scale * 0.3);
+
+  // Hehkurengas
+  ctx.beginPath(); ctx.arc(bx, by, r*2.2, 0, Math.PI*2);
+  ctx.strokeStyle = inside ? 'rgba(74,222,128,0.35)' : 'rgba(248,113,113,0.35)';
+  ctx.lineWidth = 1.5; ctx.stroke();
+
+  // Varjo
+  ctx.beginPath(); ctx.arc(bx+1.5, by+2, r, 0, Math.PI*2);
+  ctx.fillStyle = 'rgba(0,0,0,0.5)'; ctx.fill();
+
+  // Pallo itse
+  ctx.beginPath(); ctx.arc(bx, by, r, 0, Math.PI*2);
+  ctx.fillStyle = inside ? '#4ade80' : '#f87171';
+  ctx.fill();
+  ctx.strokeStyle = '#000'; ctx.lineWidth = 1.5; ctx.stroke();
 }
 
 function newAnalysis() {
