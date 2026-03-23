@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Viivajudge 🎾</title>
+<title>IN vai OUT? 🎾</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Mono:wght@400;700&display=swap');
 
@@ -378,7 +378,7 @@
   <div class="logo">
     <span class="logo-icon">🎾</span>
     <div>
-      <div class="logo-text">Viivajudge</div>
+      <div class="logo-text">IN vai OUT?</div>
       <div class="logo-sub">v5.0</div>
     </div>
   </div>
@@ -395,8 +395,7 @@
 
     <div class="hero-card">
       <span class="hero-emoji">🎾</span>
-      <div class="hero-title">Viivajudge</div>
-      <div class="hero-sub">Automaattinen viivapallojärjestelmä</div>
+      <div class="hero-title">IN vai OUT?</div>
     </div>
 
     <!-- Ohjeet ensikertalaiselle — piilotetaan kun kenttä on kalibroitu -->
@@ -418,8 +417,7 @@
             <div style="font-size:14px;font-weight:800;color:var(--text);">Valitse kentän tyyppi</div>
             <div style="font-size:12px;color:var(--muted);line-height:1.5;margin-top:2px;">
               <span style="color:var(--accent);font-weight:700;">Nelinpeli</span> 10,97 × 23,77 m &nbsp;·&nbsp;
-              <span style="color:var(--accent);font-weight:700;">Yksinkentä</span> 8,23 × 23,77 m &nbsp;·&nbsp;
-              <span style="color:var(--accent);font-weight:700;">Padel</span> 10 × 20 m &nbsp;·&nbsp;
+              <span style="color:var(--accent);font-weight:700;">Kaksinpeli</span> 8,23 × 23,77 m &nbsp;·&nbsp;
               <span style="color:var(--accent);font-weight:700;">Muu</span> syötä mitat itse
             </div>
           </div>
@@ -495,7 +493,7 @@
           <div style="display:flex;align-items:center;gap:10px;">
             <span style="font-size:20px;">🎾</span>
             <div>
-              <div class="ct-name">Yksinkentä</div>
+              <div class="ct-name">Kaksinpeli</div>
               <div class="ct-dims">Kapea · 8,23 × 23,77 m</div>
             </div>
           </div>
@@ -503,23 +501,13 @@
         </div>
         <div class="court-type-tile" id="ct-2" onclick="selectCourtType(2)">
           <div style="display:flex;align-items:center;gap:10px;">
-            <span style="font-size:20px;">🏓</span>
-            <div>
-              <div class="ct-name">Padel</div>
-              <div class="ct-dims">10,00 × 20,00 m</div>
-            </div>
-          </div>
-          <div id="ct-check-2" style="font-size:18px;opacity:0;">✓</div>
-        </div>
-        <div class="court-type-tile" id="ct-3" onclick="selectCourtType(3)">
-          <div style="display:flex;align-items:center;gap:10px;">
             <span style="font-size:20px;">📏</span>
             <div>
               <div class="ct-name">Muu kenttä</div>
               <div class="ct-dims">Syötä mitat itse</div>
             </div>
           </div>
-          <div id="ct-check-3" style="font-size:18px;opacity:0;">✓</div>
+          <div id="ct-check-2" style="font-size:18px;opacity:0;">✓</div>
         </div>
       </div>
 
@@ -714,9 +702,8 @@ const STORAGE_KEY = 'viivajudge_court_v1';
 let COURT_W = 10.97, COURT_H = 23.77;
 
 const COURT_TYPES = [
-  { name: 'Nelinpeli', w: 10.97, h: 23.77 },
-  { name: 'Yksinkentä', w: 8.23,  h: 23.77 },
-  { name: 'Padel',      w: 10.00, h: 20.00 },
+  { name: 'Nelinpeli',  w: 10.97, h: 23.77 },
+  { name: 'Kaksinpeli', w: 8.23,  h: 23.77 },
   { name: 'Muu',        w: null,  h: null  },
 ];
 let selectedCourtType = 0;
