@@ -951,14 +951,139 @@ function drawAll() {
   }
 }
 
+// === PERSPEKTIIVIKORJAUS ===
+// Tenniskentän oikeat mitat metreinä (nelinpeli)
+// Leveys: 10.97m, Pituus: 23.77m
+const COURT_W = 10.97; // metriä
+const COURT_H = 23.77; // metriä
+
+// Laske homografia-matriisi 4 pisteestä
+// Muuntaa kuvakoordinaatit (pikselit 0-1) kentän koordinaateiksi (metrit)
+function computeHomography(srcPts) {
+  // srcPts: 4 pistettä kuvassa normalisoituna [0,1]
+  // järjestys: vasen taka, oikea taka, oikea etu, vasen etu
+  // dstPts: vastaavat kentän koordinaatit metreinä
+  const dst = [
+    {x: 0,        y: 0},
+    {x: COURT_W,  y: 0},
+    {x: COURT_W,  y: COURT_H},
+    {x: 0,        y: COURT_H}
+  ];
+
+  // Rakennetaan 8x8 lineaarinen yhtälösysteemi homografialle
+  const A = [];
+  const b = [];
+  for (let i = 0; i < 4; i++) {
+    const sx = srcPts[i].x, sy = srcPts[i].y;
+    const dx = dst[i].x,   dy = dst[i].y;
+    A.push([sx, sy, 1, 0, 0, 0, -dx*sx, -dx*sy]);
+    A.push([0, 0, 0, sx, sy, 1, -dy*sx, -dy*sy]);
+    b.push(dx);
+    b.push(dy);
+  }
+
+  // Ratkaistaan Gaussin eliminoinnilla
+  const h = gaussSolve(A, b);
+  if (!h) return null;
+
+  // Palauta 3x3 matriisi
+  return [h[0],h[1],h[2], h[3],h[4],h[5], h[6],h[7],1];
+}
+
+function gaussSolve(A, b) {
+  const n = 8;
+  const M = A.map((row, i) => [...row, b[i]]);
+  for (let col = 0; col < n; col++) {
+    let maxRow = col;
+    for (let row = col+1; row < n; row++) {
+      if (Math.abs(M[row][col]) > Math.abs(M[maxRow][col])) maxRow = row;
+    }
+    [M[col], M[maxRow]] = [M[maxRow], M[col]];
+    if (Math.abs(M[col][col]) < 1e-10) return null;
+    for (let row = col+1; row < n; row++) {
+      const f = M[row][col] / M[col][col];
+      for (let j = col; j <= n; j++) M[row][j] -= f * M[col][j];
+    }
+  }
+  const x = new Array(n).fill(0);
+  for (let i = n-1; i >= 0; i--) {
+    x[i] = M[i][n] / M[i][i];
+    for (let j = i-1; j >= 0; j--) M[j][n] -= M[j][i] * x[i];
+  }
+  return x;
+}
+
+// Muunna kuvakoordinaatti (0-1) kentän koordinaatiksi (metrit)
+function imageToCourtMeters(pt, H) {
+  if (!H) return null;
+  const x = pt.x, y = pt.y;
+  const w = H[6]*x + H[7]*y + H[8];
+  return {
+    x: (H[0]*x + H[1]*y + H[2]) / w,
+    y: (H[3]*x + H[4]*y + H[5]) / w
+  };
+}
+
+// Laske etäisyys pisteestä lähimpään kentän viivaan metreinä
+function distToCourtLinesMeters(courtPt) {
+  // Kentän reunaviivat koordinaateissa (0,0)-(COURT_W, COURT_H)
+  const x = courtPt.x, y = courtPt.y;
+  const lines = [
+    {a:{x:0,y:0}, b:{x:COURT_W,y:0}},        // takaviiva
+    {a:{x:COURT_W,y:0}, b:{x:COURT_W,y:COURT_H}}, // oikea sivu
+    {a:{x:COURT_W,y:COURT_H}, b:{x:0,y:COURT_H}}, // etuviiva
+    {a:{x:0,y:COURT_H}, b:{x:0,y:0}},         // vasen sivu
+  ];
+  let minDist = Infinity;
+  for (const l of lines) {
+    const d = ptSegDist2D({x,y}, l.a, l.b);
+    if (d < minDist) minDist = d;
+  }
+  return minDist;
+}
+
+function ptSegDist2D(p, a, b) {
+  const dx=b.x-a.x, dy=b.y-a.y, len=dx*dx+dy*dy;
+  let t = len>0 ? ((p.x-a.x)*dx+(p.y-a.y)*dy)/len : 0;
+  t = Math.max(0, Math.min(1, t));
+  return Math.sqrt((p.x-a.x-t*dx)**2 + (p.y-a.y-t*dy)**2);
+}
+
+// Onko piste kentän sisällä (metrikoordinaateissa)?
+function isInsideCourt(courtPt) {
+  const margin = 0.0; // 0mm toleranssi — viiva on sisällä
+  return courtPt.x >= -margin && courtPt.x <= COURT_W + margin &&
+         courtPt.y >= -margin && courtPt.y <= COURT_H + margin;
+}
+
 // === TULOS ===
 function calculateResult() {
   if (!ballPoint || !courtProfile) return;
 
   const pts = courtProfile.points;
-  const inside = pointInPolygon(ballPoint, pts);
-  const dist = distToPolygon(ballPoint, pts);
-  const distCm = Math.round(dist * 2600);
+
+  // Yritä perspektiivikorjaus ensin
+  let inside, distCm, method;
+  const H = computeHomography(pts);
+
+  if (H) {
+    // Muunna pallon sijainti kentän koordinaateiksi
+    const courtPt = imageToCourtMeters(ballPoint, H);
+    if (courtPt) {
+      inside = isInsideCourt(courtPt);
+      const distM = distToCourtLinesMeters(courtPt);
+      distCm = Math.round(distM * 100);
+      method = 'PERSPEKTIIVIKORJAUS';
+    }
+  }
+
+  // Varasuunnitelma jos homografia epäonnistui
+  if (distCm === undefined) {
+    inside = pointInPolygon(ballPoint, pts);
+    const dist = distToPolygon(ballPoint, pts);
+    distCm = Math.round(dist * 2600);
+    method = 'PERUSLASKENTA';
+  }
 
   // Vyöhyke saksalaiselle
   let zone = '';
@@ -969,7 +1094,7 @@ function calculateResult() {
     zone = ` · ${isLeft ? 'VASEN' : 'OIKEA'} ${isNear ? 'ETU' : 'TAKA'}`;
   }
 
-  showResult(inside, distCm, zone);
+  showResult(inside, distCm, zone, method);
 }
 
 function pointInPolygon(pt, poly) {
@@ -995,16 +1120,16 @@ function ptSeg(p,a,b) {
   return Math.sqrt((p.x-a.x-t*dx)**2+(p.y-a.y-t*dy)**2);
 }
 
-function showResult(inside, distCm, zone) {
+function showResult(inside, distCm, zone, method) {
   document.getElementById('screen-analysis').style.display='none';
   const rs=document.getElementById('result-section');
   rs.style.display='flex'; rs.className=inside?'in-result':'out-result';
   document.getElementById('verdict-text').textContent=inside?'IN':'OUT';
   document.getElementById('result-dist').textContent=inside
-    ?`${distCm} cm inside the line`:`${distCm} cm outside the line`;
+    ?`${distCm} cm viivasta sisään`:`${distCm} cm viivasta ulos`;
   const camLabels=['CAM 1','CAM 2','CAM 3','CAM 4'];
   document.getElementById('result-detail').textContent=
-    `${camLabels[selectedCam]||'CAM'} · BUFFER: ${bufferSeconds}s${zone}`;
+    `${camLabels[selectedCam]||'CAM'} · ${method||'LASKENTA'} · BUFFER: ${bufferSeconds}s${zone}`;
   setStep(4);
 }
 
