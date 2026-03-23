@@ -318,19 +318,32 @@
         <div class="rec-badge"><div class="rec-dot"></div> REC</div>
         <div class="buffer-badge" id="buffer-badge">Puskuri: 0s</div>
         <div class="cam-label-overlay" id="cam-label-overlay">CAM 1</div>
+        <div id="voice-flash" style="display:none;position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(255,23,68,0.25);border:3px solid #ff1744;border-radius:4px;pointer-events:none;"></div>
       </div>
       <div class="no-camera-msg" id="no-camera-msg" style="display:none">
         Kamera ei käytettävissä.<br>Paina HAASTO ja lataa video manuaalisesti.
       </div>
     </div>
 
+    <!-- Äänitunnistuksen tila -->
+    <div id="voice-status" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--surface);border:1px solid rgba(0,184,255,0.1);border-radius:4px;">
+      <div id="voice-dot" style="width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;"></div>
+      <span id="voice-label" style="font-family:Share Tech Mono,monospace;font-size:10px;color:var(--muted);letter-spacing:1px;">ÄÄNITUNNISTUS KÄYNNISTYY...</span>
+    </div>
+
+    <!-- Merkityt hetket -->
+    <div id="marks-section" style="display:none;flex-direction:column;gap:6px;">
+      <div style="font-family:Share Tech Mono,monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;">Merkityt haastot</div>
+      <div id="marks-list" style="display:flex;flex-direction:column;gap:6px;"></div>
+    </div>
+
     <button class="haasto-btn" id="haasto-btn" onclick="pressHaasto()">⚡ HAASTO</button>
-    <div class="haasto-sub">Paina heti kun kiistanalainen tilanne syntyy</div>
+    <div class="haasto-sub">Huuda "HAASTO" tai paina nappia — hetki merkitään automaattisesti</div>
 
     <div class="info-card" id="recording-info">
       <strong>Kuvaus käynnissä</strong><br>
-      Puhelin tallentaa viimeiset 60 sekuntia jatkuvasti muistiin.<br>
-      Kun painat HAASTO, tuo hetki jäädytetään analysoitavaksi.
+      Puhelin kuuntelee "HAASTO"-huutoa jatkuvasti.<br>
+      Kun huudat, hetki merkitään automaattisesti — voit palata siihen myöhemmin.
     </div>
 
     <button class="btn btn-reset" onclick="goBack()">← Takaisin</button>
@@ -700,6 +713,7 @@ async function startRecording() {
     });
     document.getElementById('camera-feed').srcObject = mediaStream;
     startBuffer();
+    startVoiceRecognition();
   } catch(err) {
     document.getElementById('camera-feed').style.display = 'none';
     document.getElementById('no-camera-msg').style.display = 'block';
@@ -738,12 +752,130 @@ function startFallbackBuffer() {
   }, 1000);
 }
 
+// === ÄÄNITUNNISTUS ===
+let speechRecognition = null;
+let haastoMarks = []; // [{time, bufferOffset}]
+
+function startVoiceRecognition() {
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SpeechRecognition) {
+    document.getElementById('voice-label').textContent = 'ÄÄNITUNNISTUS EI TUETTU — KÄYTÄ NAPPIA';
+    return;
+  }
+
+  speechRecognition = new SpeechRecognition();
+  speechRecognition.lang = 'fi-FI';
+  speechRecognition.continuous = true;
+  speechRecognition.interimResults = false;
+  speechRecognition.maxAlternatives = 3;
+
+  speechRecognition.onstart = () => {
+    document.getElementById('voice-dot').style.background = '#00e5a0';
+    document.getElementById('voice-label').textContent = 'KUUNTELEE — HUUDA "HAASTO"';
+    document.getElementById('voice-label').style.color = '#00e5a0';
+  };
+
+  speechRecognition.onresult = e => {
+    for (let i = e.resultIndex; i < e.results.length; i++) {
+      const transcript = e.results[i][0].transcript.toLowerCase().trim();
+      // Tunnistaa "haasto" ja sen läheiset variantit
+      if (transcript.includes('haasto') || transcript.includes('hasto') ||
+          transcript.includes('haasta') || transcript.includes('challenge')) {
+        markHaastoMoment();
+      }
+    }
+  };
+
+  speechRecognition.onerror = e => {
+    if (e.error === 'not-allowed') {
+      document.getElementById('voice-label').textContent = 'MIKROFONI EI SALLITTU — KÄYTÄ NAPPIA';
+    } else if (e.error !== 'no-speech') {
+      // Käynnistä uudelleen virheen jälkeen
+      setTimeout(() => { if (speechRecognition) speechRecognition.start(); }, 1000);
+    }
+  };
+
+  speechRecognition.onend = () => {
+    // Käynnistä automaattisesti uudelleen jotta kuuntelu on jatkuvaa
+    if (speechRecognition) {
+      setTimeout(() => {
+        try { speechRecognition.start(); } catch(e) {}
+      }, 300);
+    }
+  };
+
+  try { speechRecognition.start(); } catch(e) {}
+}
+
+function stopVoiceRecognition() {
+  if (speechRecognition) {
+    speechRecognition.onend = null;
+    try { speechRecognition.stop(); } catch(e) {}
+    speechRecognition = null;
+  }
+  document.getElementById('voice-dot').style.background = 'var(--muted)';
+  document.getElementById('voice-label').textContent = 'ÄÄNITUNNISTUS PYSÄYTETTY';
+  document.getElementById('voice-label').style.color = 'var(--muted)';
+}
+
+function markHaastoMoment() {
+  const now = Date.now();
+  const mark = {
+    time: now,
+    bufferOffset: bufferSeconds,
+    label: new Date(now).toLocaleTimeString('fi-FI')
+  };
+  haastoMarks.push(mark);
+
+  // Visuaalinen välähdys
+  const flash = document.getElementById('voice-flash');
+  flash.style.display = 'block';
+  setTimeout(() => flash.style.display = 'none', 400);
+
+  // Päivitä merkkilista
+  updateMarksList();
+
+  // Ääni-feedback
+  document.getElementById('voice-label').textContent = `HAASTO MERKITTY — ${mark.label}`;
+  document.getElementById('voice-dot').style.background = '#ff1744';
+  setTimeout(() => {
+    document.getElementById('voice-dot').style.background = '#00e5a0';
+    document.getElementById('voice-label').textContent = 'KUUNTELEE — HUUDA "HAASTO"';
+  }, 2000);
+}
+
+function updateMarksList() {
+  const section = document.getElementById('marks-section');
+  const list = document.getElementById('marks-list');
+  if (haastoMarks.length === 0) { section.style.display = 'none'; return; }
+  section.style.display = 'flex';
+  list.innerHTML = haastoMarks.map((m, i) => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:rgba(255,23,68,0.08);border:1px solid rgba(255,23,68,0.2);border-radius:4px;">
+      <span style="font-family:Share Tech Mono,monospace;font-size:11px;color:var(--out)">HAASTO ${i+1} — ${m.label}</span>
+      <button onclick="openMarkAtIndex(${i})" style="padding:4px 10px;background:var(--out);color:#000;border:none;border-radius:3px;font-family:Orbitron,monospace;font-size:9px;font-weight:700;cursor:pointer;letter-spacing:1px;">KATSO</button>
+    </div>
+  `).join('');
+}
+
+function openMarkAtIndex(index) {
+  const mark = haastoMarks[index];
+  if (!mark) return;
+  // Laske missä kohdassa videossa tämä hetki on
+  // bufferOffset kertoo kuinka monta sekuntia ennen haastoa tämä tapahtui
+  const secondsAgo = (Date.now() - mark.time) / 1000;
+  pendingSeekSeconds = secondsAgo; // tallennetaan muuttujaan, käytetään kun video avataan
+  pressHaasto();
+}
+
+let pendingSeekSeconds = 0;
+
 // === HAASTO ===
 function pressHaasto() {
   const btn = document.getElementById('haasto-btn');
   btn.classList.add('pressed');
   btn.textContent = '⚡ TALLENNETTU';
   clearInterval(bufferInterval);
+  stopVoiceRecognition();
   if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
   if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
   document.getElementById('header-status').textContent = 'ANALYYSI';
@@ -790,7 +922,13 @@ function openAnalysis(source) {
     document.getElementById('scrubber').max = vid.duration;
     updateTimeLabel();
     resizeCanvases();
-    vid.currentTime = Math.max(0, vid.duration - 5);
+    // Hyppää oikeaan kohtaan — joko merkittyyn hetkeen tai lähelle loppua
+    if (pendingSeekSeconds > 0 && pendingSeekSeconds < vid.duration) {
+      vid.currentTime = Math.max(0, vid.duration - pendingSeekSeconds - 3);
+      pendingSeekSeconds = 0;
+    } else {
+      vid.currentTime = Math.max(0, vid.duration - 5);
+    }
     analyzeAudioForTimeline(source);
     document.getElementById('instructions').innerHTML =
       '<strong>Merkitse pomppupiste</strong><br>' +
@@ -1144,13 +1282,15 @@ function newAnalysis() {
 }
 
 function backToRecording() {
-  ballPoint=null; audioData=[];
+  ballPoint=null; audioData=[]; haastoMarks=[]; pendingSeekSeconds=0;
   document.getElementById('result-section').style.display='none';
   document.getElementById('screen-analysis').style.display='none';
   document.getElementById('screen-recording').style.display='flex';
   document.getElementById('screen-recording').style.flexDirection='column';
   document.getElementById('haasto-btn').classList.remove('pressed');
   document.getElementById('haasto-btn').textContent='⚡ HAASTO';
+  document.getElementById('marks-section').style.display='none';
+  document.getElementById('marks-list').innerHTML='';
   recordedChunks=[]; bufferSeconds=0;
   document.getElementById('buffer-badge').textContent='Puskuri: 0s';
   document.getElementById('header-status').textContent='REC';
@@ -1165,6 +1305,7 @@ function backToRecording() {
     document.getElementById('camera-feed').style.display='block';
     document.getElementById('no-camera-msg').style.display='none';
     startBuffer();
+    startVoiceRecognition();
   }).catch(() => {
     document.getElementById('camera-feed').style.display='none';
     document.getElementById('no-camera-msg').style.display='block';
