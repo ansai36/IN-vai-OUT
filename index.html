@@ -176,6 +176,19 @@
   }
   .calib-hint span { font-size: 12px; font-weight: 600; color: var(--muted); display: block; margin-top: 3px; }
 
+  .court-type-tile {
+    display: flex; justify-content: space-between; align-items: center;
+    background: var(--surface2);
+    border: 2px solid rgba(134,239,172,0.1);
+    border-radius: 12px; padding: 12px 16px;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .court-type-tile:active { transform: scale(0.98); }
+  .court-type-tile.selected { border-color: var(--accent); background: rgba(134,239,172,0.08); }
+  .ct-name { font-size: 15px; font-weight: 800; color: var(--text); }
+  .court-type-tile.selected .ct-name { color: var(--accent); }
+  .ct-dims { font-size: 12px; font-weight: 600; color: var(--muted); font-family: 'Space Mono', monospace; }
+
   /* === NÄYTTÖ 3: KUVAUS === */
   #screen-recording {
     display: none; flex-direction: column;
@@ -409,21 +422,112 @@
   </div>
 
   <!-- NÄYTTÖ 2: Kalibrointi -->
-  <div id="screen-calib">
-    <div class="calib-header">
-      <span class="calib-emoji">📐</span>
-      <div>
-        <div class="calib-title">Kalibroi kenttä</div>
-        <div class="calib-sub">Tehdään kerran — sovellus muistaa sen aina</div>
+  <div id="screen-calib" style="padding:16px;">
+
+    <!-- Vaihepalkit -->
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
+      <div id="calib-step-pill-1" style="flex:1;padding:8px;border-radius:10px;text-align:center;font-size:12px;font-weight:800;background:rgba(134,239,172,0.15);color:var(--accent);border:1.5px solid var(--accent);">
+        1 · Kentän tyyppi
+      </div>
+      <div style="color:var(--muted);font-size:14px;">→</div>
+      <div id="calib-step-pill-2" style="flex:1;padding:8px;border-radius:10px;text-align:center;font-size:12px;font-weight:800;background:var(--surface2);color:var(--muted);border:1.5px solid transparent;">
+        2 · Merkitse kulmät
       </div>
     </div>
 
-    <div id="calib-source" style="display:flex;flex-direction:column;gap:8px;">
-      <button class="btn btn-primary" onclick="startCalibCamera()" style="width:100%;">📷 Kuvaa kenttä nyt</button>
-      <button class="btn btn-secondary" onclick="document.getElementById('calib-file').click()" style="width:100%;">📁 Lataa kuva tai video</button>
-      <input type="file" id="calib-file" accept="video/*,image/*" style="display:none">
+    <!-- VAIHE 1: Kentän tyyppi -->
+    <div id="calib-court-type" style="display:flex;flex-direction:column;gap:12px;">
+
+      <div style="background:var(--court);border-radius:16px;padding:16px;text-align:center;">
+        <div style="font-size:32px;margin-bottom:6px;">🏟️</div>
+        <div style="font-size:17px;font-weight:900;color:var(--white);">Minkä kokoinen kenttä?</div>
+        <div style="font-size:12px;color:rgba(240,236,224,0.7);margin-top:4px;">Sovellus käyttää oikeita mittoja tarkkuuteen</div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div class="court-type-tile selected" id="ct-0" onclick="selectCourtType(0)">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:20px;">🎾</span>
+            <div>
+              <div class="ct-name">Nelinpeli</div>
+              <div class="ct-dims">Standardi · 10,97 × 23,77 m</div>
+            </div>
+          </div>
+          <div id="ct-check-0" style="font-size:18px;">✓</div>
+        </div>
+        <div class="court-type-tile" id="ct-1" onclick="selectCourtType(1)">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:20px;">🎾</span>
+            <div>
+              <div class="ct-name">Yksinkentä</div>
+              <div class="ct-dims">Kapea · 8,23 × 23,77 m</div>
+            </div>
+          </div>
+          <div id="ct-check-1" style="font-size:18px;opacity:0;">✓</div>
+        </div>
+        <div class="court-type-tile" id="ct-2" onclick="selectCourtType(2)">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:20px;">🏓</span>
+            <div>
+              <div class="ct-name">Padel</div>
+              <div class="ct-dims">10,00 × 20,00 m</div>
+            </div>
+          </div>
+          <div id="ct-check-2" style="font-size:18px;opacity:0;">✓</div>
+        </div>
+        <div class="court-type-tile" id="ct-3" onclick="selectCourtType(3)">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:20px;">📏</span>
+            <div>
+              <div class="ct-name">Muu kenttä</div>
+              <div class="ct-dims">Syötä mitat itse</div>
+            </div>
+          </div>
+          <div id="ct-check-3" style="font-size:18px;opacity:0;">✓</div>
+        </div>
+      </div>
+
+      <!-- Omat mitat -->
+      <div id="custom-dims-input" style="display:none;flex-direction:column;gap:8px;background:var(--surface2);border-radius:12px;padding:12px;border:1.5px solid rgba(134,239,172,0.15);">
+        <div style="font-size:13px;font-weight:700;color:var(--muted);">📏 Syötä kentän mitat</div>
+        <div style="display:flex;gap:8px;">
+          <div style="flex:1;">
+            <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;">Leveys (m)</div>
+            <input id="custom-w" type="number" step="0.01" value="10.97" style="width:100%;padding:10px;border-radius:8px;border:1.5px solid rgba(134,239,172,0.2);background:var(--bg);color:var(--text);font-size:16px;font-family:Nunito,sans-serif;font-weight:700;">
+          </div>
+          <div style="flex:1;">
+            <div style="font-size:11px;font-weight:700;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:1px;">Pituus (m)</div>
+            <input id="custom-h" type="number" step="0.01" value="23.77" style="width:100%;padding:10px;border-radius:8px;border:1.5px solid rgba(134,239,172,0.2);background:var(--bg);color:var(--text);font-size:16px;font-family:Nunito,sans-serif;font-weight:700;">
+          </div>
+        </div>
+      </div>
+
+      <button class="btn btn-primary" onclick="confirmCourtType()" style="width:100%;font-size:17px;padding:16px;">
+        Seuraava → Merkitse kulmät
+      </button>
+      <button class="btn btn-ghost" onclick="cancelCalibration()" style="width:100%;text-align:center;">← Takaisin</button>
     </div>
 
+    <!-- VAIHE 2: Kulmien merkintä -->
+    <div id="calib-source" style="display:none;flex-direction:column;gap:12px;">
+
+      <div style="background:var(--court);border-radius:16px;padding:16px;text-align:center;">
+        <div style="font-size:32px;margin-bottom:6px;">📍</div>
+        <div style="font-size:17px;font-weight:900;color:var(--white);">Merkitse kentän kulmät</div>
+        <div style="font-size:12px;color:rgba(240,236,224,0.7);margin-top:4px;">Kuvaa ensin kenttä niin että kaikki neljä kulmaa näkyvät</div>
+      </div>
+
+      <button class="btn btn-primary" onclick="startCalibCamera()" style="width:100%;font-size:16px;padding:14px;">
+        📷 Avaa kamera ja kuvaa
+      </button>
+      <button class="btn btn-secondary" onclick="document.getElementById('calib-file').click()" style="width:100%;">
+        📁 Lataa olemassa oleva kuva tai video
+      </button>
+      <input type="file" id="calib-file" accept="video/*,image/*" style="display:none">
+      <button class="btn btn-ghost" onclick="backToCourtType()" style="width:100%;text-align:center;">← Vaihda kentän tyyppiä</button>
+    </div>
+
+    <!-- Video/kuva kalibrointia varten -->
     <div class="calib-video-wrap" id="calib-wrap" style="display:none">
       <video id="calib-video" playsinline muted></video>
       <canvas id="calib-canvas"></canvas>
@@ -443,8 +547,8 @@
       <span id="calib-step-desc">Kentän vasen takakulma</span>
     </div>
 
-    <div style="display:flex;gap:8px;" id="calib-btns" style="display:none">
-      <button class="btn btn-secondary" onclick="undoCalibPoint()" style="flex:1">← Peruuta</button>
+    <div style="display:none;gap:8px;" id="calib-btns">
+      <button class="btn btn-secondary" onclick="undoCalibPoint()" style="flex:1">← Peruuta viimeisin</button>
       <button class="btn btn-ghost" onclick="cancelCalibration()">Poistu</button>
     </div>
   </div>
@@ -563,7 +667,17 @@
 // === VAKIOT JA TILA ===
 const BUFFER_SEC = 60;
 const STORAGE_KEY = 'viivajudge_court_v1';
-const COURT_W = 10.97, COURT_H = 23.77; // tenniskentän mitat metreinä
+
+// Kentän mitat — asetetaan kalibroinnissa
+let COURT_W = 10.97, COURT_H = 23.77;
+
+const COURT_TYPES = [
+  { name: 'Nelinpeli', w: 10.97, h: 23.77 },
+  { name: 'Yksinkentä', w: 8.23,  h: 23.77 },
+  { name: 'Padel',      w: 10.00, h: 20.00 },
+  { name: 'Muu',        w: null,  h: null  },
+];
+let selectedCourtType = 0;
 
 let selectedCam = -1;
 let mediaStream = null, mediaRecorder = null;
@@ -587,9 +701,11 @@ function loadProfile() {
     const s = localStorage.getItem(STORAGE_KEY);
     if (s) {
       courtProfile = JSON.parse(s);
+      if (courtProfile.courtW) { COURT_W = courtProfile.courtW; COURT_H = courtProfile.courtH; }
       const d = new Date(courtProfile.savedAt);
+      const type = courtProfile.courtType || 'Nelinpeli';
       document.getElementById('profile-badge').style.display = 'flex';
-      document.getElementById('profile-sub').textContent = `Kalibroitu ${d.toLocaleDateString('fi-FI')}`;
+      document.getElementById('profile-sub').textContent = `${type} · Kalibroitu ${d.toLocaleDateString('fi-FI')}`;
       return true;
     }
   } catch(e) {}
@@ -597,7 +713,7 @@ function loadProfile() {
 }
 
 function saveProfile(pts, net) {
-  courtProfile = { points: pts, netPoint: net, savedAt: Date.now() };
+  courtProfile = { points: pts, netPoint: net, savedAt: Date.now(), courtW: COURT_W, courtH: COURT_H, courtType: COURT_TYPES[selectedCourtType]?.name || 'Muu' };
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(courtProfile)); } catch(e) {}
 }
 
@@ -620,6 +736,51 @@ function checkCalibAndStart() {
   }
 }
 
+// === KENTÄN TYYPIN VALINTA ===
+function selectCourtType(i) {
+  selectedCourtType = i;
+  document.querySelectorAll('.court-type-tile').forEach((t,j) => {
+    t.classList.toggle('selected', j === i);
+    const chk = document.getElementById('ct-check-' + j);
+    if (chk) chk.style.opacity = j === i ? '1' : '0';
+  });
+  document.getElementById('custom-dims-input').style.display = i === 3 ? 'flex' : 'none';
+}
+
+function confirmCourtType() {
+  const ct = COURT_TYPES[selectedCourtType];
+  if (selectedCourtType === 3) {
+    const w = parseFloat(document.getElementById('custom-w').value);
+    const h = parseFloat(document.getElementById('custom-h').value);
+    if (!w || !h || w < 1 || h < 1) { alert('Syötä kentän mitat metreinä.'); return; }
+    COURT_W = w; COURT_H = h;
+  } else {
+    COURT_W = ct.w; COURT_H = ct.h;
+  }
+  document.getElementById('calib-court-type').style.display = 'none';
+  document.getElementById('calib-source').style.display = 'flex';
+  // Päivitä vaihepillerit
+  document.getElementById('calib-step-pill-1').style.background = 'rgba(74,222,128,0.1)';
+  document.getElementById('calib-step-pill-1').style.color = 'var(--in)';
+  document.getElementById('calib-step-pill-1').style.borderColor = 'var(--in)';
+  document.getElementById('calib-step-pill-1').textContent = '✓ Kentän tyyppi';
+  document.getElementById('calib-step-pill-2').style.background = 'rgba(134,239,172,0.15)';
+  document.getElementById('calib-step-pill-2').style.color = 'var(--accent)';
+  document.getElementById('calib-step-pill-2').style.borderColor = 'var(--accent)';
+}
+
+function backToCourtType() {
+  document.getElementById('calib-source').style.display = 'none';
+  document.getElementById('calib-court-type').style.display = 'flex';
+  document.getElementById('calib-step-pill-1').style.background = 'rgba(134,239,172,0.15)';
+  document.getElementById('calib-step-pill-1').style.color = 'var(--accent)';
+  document.getElementById('calib-step-pill-1').style.borderColor = 'var(--accent)';
+  document.getElementById('calib-step-pill-1').textContent = '1 · Kentän tyyppi';
+  document.getElementById('calib-step-pill-2').style.background = 'var(--surface2)';
+  document.getElementById('calib-step-pill-2').style.color = 'var(--muted)';
+  document.getElementById('calib-step-pill-2').style.borderColor = 'transparent';
+}
+
 // === KALIBROINTI ===
 const calibSteps = [
   { title: '📍 Napauta: vasen takakulma', desc: 'Kaukainen vasen kulma — perusviivan ja sivuviivan leikkauspiste' },
@@ -632,6 +793,23 @@ const calibSteps = [
 function startCalibration() {
   showScreen('screen-calib');
   calibPoints = []; calibNetPoint = null;
+  selectedCourtType = 0;
+  document.querySelectorAll('.court-type-tile').forEach((t,i) => {
+    t.classList.toggle('selected', i===0);
+    const chk = document.getElementById('ct-check-' + i);
+    if (chk) chk.style.opacity = i===0 ? '1' : '0';
+  });
+  document.getElementById('custom-dims-input').style.display = 'none';
+  document.getElementById('calib-court-type').style.display = 'flex';
+  document.getElementById('calib-source').style.display = 'none';
+  document.getElementById('calib-wrap').style.display = 'none';
+  document.getElementById('calib-progress').style.display = 'none';
+  document.getElementById('calib-step-info').style.display = 'none';
+  document.getElementById('calib-btns').style.display = 'none';
+  // Nollaa vaihepillerit
+  document.getElementById('calib-step-pill-1').style.cssText = 'flex:1;padding:8px;border-radius:10px;text-align:center;font-size:12px;font-weight:800;background:rgba(134,239,172,0.15);color:var(--accent);border:1.5px solid var(--accent);';
+  document.getElementById('calib-step-pill-1').textContent = '1 · Kentän tyyppi';
+  document.getElementById('calib-step-pill-2').style.cssText = 'flex:1;padding:8px;border-radius:10px;text-align:center;font-size:12px;font-weight:800;background:var(--surface2);color:var(--muted);border:1.5px solid transparent;';
 }
 
 function cancelCalibration() {
