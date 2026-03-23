@@ -188,13 +188,13 @@
   /* === NÄYTTÖ 3: KUVAUS === */
   #screen-recording {
     display: none; flex-direction: column;
-    flex: 1;
+    flex: 1; min-height: 0;
   }
 
   .camera-view {
     position: relative; overflow: hidden;
     background: #000;
-    flex: 1; min-height: 200px;
+    flex: 1; min-height: 150px; max-height: 45vh;
     display: flex; align-items: center; justify-content: center;
   }
   #camera-feed { width:100%; height:100%; object-fit:cover; display:block; }
@@ -243,6 +243,7 @@
     padding: 12px 16px 20px;
     display: flex; flex-direction: column; gap: 10px;
     background: var(--bg);
+    flex-shrink: 0;
   }
 
   .haasto-btn {
@@ -803,12 +804,12 @@ function selectCourtType(i) {
     const chk = document.getElementById('ct-check-' + j);
     if (chk) chk.style.opacity = j === i ? '1' : '0';
   });
-  document.getElementById('custom-dims-input').style.display = i === 3 ? 'flex' : 'none';
+  document.getElementById('custom-dims-input').style.display = i === 2 ? 'flex' : 'none';
 }
 
 function confirmCourtType() {
   const ct = COURT_TYPES[selectedCourtType];
-  if (selectedCourtType === 3) {
+  if (selectedCourtType === 2) {
     const w = parseFloat(document.getElementById('custom-w').value);
     const h = parseFloat(document.getElementById('custom-h').value);
     if (!w || !h || w < 1 || h < 1) { alert('Syötä kentän mitat metreinä.'); return; }
