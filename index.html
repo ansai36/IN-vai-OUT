@@ -1236,9 +1236,16 @@ function openAnalysis(src) {
 
 // === AIKAJANA ===
 async function analyzeAudio(src) {
+  // Näytä heti selattava jana vaikka audio ei toimisi
+  drawTimeline();
+
   try {
     const ab = src instanceof Blob ? await src.arrayBuffer() : await new Response(src).arrayBuffer();
-    const ctx2 = new (window.AudioContext || window.webkitAudioContext)();
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) throw new Error('No AudioContext');
+    const ctx2 = new AudioCtx();
+    // iOS vaatii resume() ennen decodeAudioData
+    if (ctx2.state === 'suspended') await ctx2.resume();
     const buf = await ctx2.decodeAudioData(ab.slice(0));
     const data = buf.getChannelData(0);
     const B = 120, bsz = Math.floor(data.length / B);
@@ -1247,27 +1254,45 @@ async function analyzeAudio(src) {
       let s = 0; for (let j = 0; j < bsz; j++) s += Math.abs(data[i*bsz+j]||0);
       audioData.push(s/bsz);
     }
-    await ctx2.close(); drawTimeline();
-  } catch(e) { audioData = new Array(120).fill(0.01); drawTimeline(); }
+    await ctx2.close();
+    drawTimeline();
+  } catch(e) {
+    // Audio ei onnistu — näytä tasainen jana jota voi silti selata
+    audioData = new Array(120).fill(0.15);
+    document.querySelector('.timeline-hint').textContent =
+      'Äänianalyysi ei onnistunut — voit silti napauttaa janaa selataksesi videota';
+    drawTimeline();
+  }
 }
 
 function drawTimeline(hl) {
   const W = tlCanvas.offsetWidth || 300;
   tlCanvas.width = W; tlCanvas.height = 56;
   tlCtx.clearRect(0, 0, W, 56);
-  if (!audioData.length) return;
-  const max = Math.max(...audioData) || 1;
-  const bw = W / audioData.length;
-  audioData.forEach((v, i) => {
-    const h = Math.max(2, (v/max)*50);
-    const isHl = hl !== undefined && Math.abs(i-hl) < 2;
-    tlCtx.fillStyle = isHl ? '#fbbf24' : (v/max > 0.5 ? '#86efac' : 'rgba(134,239,172,0.25)');
-    tlCtx.fillRect(i*bw+0.5, 56-h, Math.max(1,bw-1), h);
-  });
-  if (vid.duration) {
-    const pos = (vid.currentTime/vid.duration)*W;
-    tlCtx.strokeStyle='#fbbf24'; tlCtx.lineWidth=2;
-    tlCtx.beginPath(); tlCtx.moveTo(pos,0); tlCtx.lineTo(pos,56); tlCtx.stroke();
+
+  // Piirrä aina jotain — edes taustaviivoitus
+  if (!audioData.length) {
+    // Tyhjä jana — viivoitus jotta näyttää selattavalta
+    tlCtx.fillStyle = 'rgba(134,220,134,0.08)';
+    tlCtx.fillRect(0, 0, W, 56);
+    tlCtx.fillStyle = 'rgba(134,220,134,0.2)';
+    for (let i = 0; i < W; i += 8) tlCtx.fillRect(i, 28, 2, 6);
+  } else {
+    const max = Math.max(...audioData) || 1;
+    const bw = W / audioData.length;
+    audioData.forEach((v, i) => {
+      const h = Math.max(3, (v/max)*50);
+      const isHl = hl !== undefined && Math.abs(i-hl) < 2;
+      tlCtx.fillStyle = isHl ? '#fbbf24' : (v/max > 0.5 ? '#86efac' : 'rgba(134,220,134,0.3)');
+      tlCtx.fillRect(i*bw+0.5, 56-h, Math.max(1.5,bw-1), h);
+    });
+  }
+
+  // Nykyhetken viiva
+  if (vid.duration && vid.currentTime >= 0) {
+    const pos = (vid.currentTime / vid.duration) * W;
+    tlCtx.strokeStyle = '#fbbf24'; tlCtx.lineWidth = 2;
+    tlCtx.beginPath(); tlCtx.moveTo(pos, 0); tlCtx.lineTo(pos, 56); tlCtx.stroke();
   }
 }
 
@@ -1607,12 +1632,25 @@ function newAnalysis() {
 
 function backToRecording() {
   ballPoint=null; audioData=[]; haastoMarks=[]; pendingSeekSec=0;
+  capturedBlob=null;
+
+  // Tyhjennä video kokonaan
+  vid.pause();
+  vid.removeAttribute('src');
+  vid.load();
+
   document.getElementById('marks-wrap').style.display='none';
   document.getElementById('marks-list').innerHTML='';
   document.getElementById('haasto-btn').classList.remove('pressed');
   document.getElementById('haasto-btn').textContent='⚡ HAASTO';
   recordedChunks=[]; bufferSec=0;
   document.getElementById('buffer-badge').textContent='Puskuri: 0s';
+
+  // Tyhjennä aikajana
+  const W = tlCanvas.offsetWidth || 300;
+  tlCanvas.width = W; tlCanvas.height = 56;
+  tlCtx.clearRect(0, 0, W, 56);
+
   showScreen('screen-recording');
   setHeaderRec(true);
 
