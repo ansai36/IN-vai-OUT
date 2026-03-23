@@ -3,367 +3,512 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Hawk-Eye Judge</title>
+<title>Viivajudge 🎾</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&family=Inter:wght@300;400;500&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Mono:wght@400;700&display=swap');
 
   :root {
-    --bg: #030810;
-    --surface: #060f1e;
-    --surface2: #0a1628;
-    --in: #00e5ff;
-    --out: #ff1744;
-    --text: #c8dff5;
-    --muted: #3d5a7a;
-    --accent: #00b8ff;
-    --gold: #ffc107;
-    --green: #00e5a0;
+    --bg: #0d1f0d;
+    --surface: #132213;
+    --surface2: #1a2e1a;
+    --court: #2d5a1b;
+    --line: #f0ece0;
+    --in: #4ade80;
+    --out: #f87171;
+    --text: #e8f5e0;
+    --muted: #6b8f5e;
+    --accent: #86efac;
+    --gold: #fbbf24;
+    --red: #ef4444;
+    --white: #f0ece0;
   }
 
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'Inter', sans-serif;
+    font-family: 'Nunito', sans-serif;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background-image:
-      linear-gradient(rgba(0,184,255,0.03) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(0,184,255,0.03) 1px, transparent 1px);
-    background-size: 40px 40px;
   }
 
+  /* HEADER */
   header {
-    padding: 14px 20px 12px;
+    padding: 12px 16px;
     display: flex; align-items: center; justify-content: space-between;
-    border-bottom: 1px solid rgba(0,184,255,0.15);
-    background: rgba(3,8,16,0.95);
-    position: sticky; top: 0; z-index: 10;
+    background: var(--surface);
+    border-bottom: 2px solid var(--court);
   }
-  .header-left { display:flex; align-items:center; gap:14px; }
-  .hawk-eye-logo { width:36px; height:36px; border:1.5px solid var(--accent); border-radius:50%; display:flex; align-items:center; justify-content:center; position:relative; }
-  .hawk-eye-logo::before { content:''; width:10px; height:10px; background:var(--accent); border-radius:50%; }
-  .hawk-eye-logo::after { content:''; position:absolute; width:24px; height:24px; border:1px solid rgba(0,184,255,0.3); border-radius:50%; }
-  h1 { font-family:'Orbitron',monospace; font-size:16px; font-weight:700; letter-spacing:3px; color:var(--accent); text-transform:uppercase; }
-  .header-tag { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:2px; margin-top:2px; }
-  .live-indicator { display:flex; align-items:center; gap:6px; font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--gold); letter-spacing:1px; }
-  .live-dot { width:6px; height:6px; border-radius:50%; background:var(--gold); animation:blink 1.2s ease-in-out infinite; }
+  .logo { display:flex; align-items:center; gap:8px; }
+  .logo-icon { font-size: 24px; }
+  .logo-text { font-size: 20px; font-weight: 900; color: var(--accent); letter-spacing: -0.5px; }
+  .logo-sub { font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; }
+  .rec-pill {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(239,68,68,0.15);
+    border: 1.5px solid rgba(239,68,68,0.4);
+    border-radius: 20px; padding: 4px 12px;
+    font-family: 'Space Mono', monospace; font-size: 11px; color: var(--out);
+    font-weight: 700; letter-spacing: 1px;
+  }
+  .rec-dot { width:7px; height:7px; border-radius:50%; background:var(--out); animation:blink 1s infinite; }
+  .ready-pill {
+    display: flex; align-items: center; gap: 6px;
+    background: rgba(134,239,172,0.1);
+    border: 1.5px solid rgba(134,239,172,0.3);
+    border-radius: 20px; padding: 4px 12px;
+    font-family: 'Space Mono', monospace; font-size: 11px; color: var(--accent);
+    font-weight: 700; letter-spacing: 1px;
+  }
 
   @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+  @keyframes bounce-in { 0%{transform:scale(0.8);opacity:0} 60%{transform:scale(1.05)} 100%{transform:scale(1);opacity:1} }
+  @keyframes flash-red { 0%,100%{background:rgba(239,68,68,0.15)} 50%{background:rgba(239,68,68,0.4)} }
+  @keyframes slide-up { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
   @keyframes scan { 0%{transform:translateX(-100%)} 100%{transform:translateX(100%)} }
-  @keyframes reveal { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
-  @keyframes recording-pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  @keyframes pulse-green { 0%,100%{box-shadow:0 0 0 0 rgba(74,222,128,0.4)} 50%{box-shadow:0 0 0 8px rgba(74,222,128,0)} }
 
-  .steps { display:flex; padding:10px 20px; border-bottom:1px solid rgba(0,184,255,0.1); background:var(--surface); overflow-x:auto; gap:0; }
-  .step { display:flex; align-items:center; gap:6px; font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--muted); white-space:nowrap; padding-right:12px; letter-spacing:1px; text-transform:uppercase; }
-  .step.active { color:var(--accent); }
-  .step.done { color:var(--green); }
-  .step-num { width:20px; height:20px; border-radius:3px; border:1px solid currentColor; display:flex; align-items:center; justify-content:center; font-size:10px; flex-shrink:0; }
-  .step.done .step-num { background:var(--green); border-color:var(--green); color:#000; }
-  .step.active .step-num { background:var(--accent); border-color:var(--accent); color:#000; font-weight:700; }
-  .step-sep { color:rgba(0,184,255,0.2); padding-right:12px; font-size:10px; }
+  main { flex:1; display:flex; flex-direction:column; }
 
-  main { flex:1; padding:14px 16px; display:flex; flex-direction:column; gap:14px; }
-
-  .btn { padding:10px 16px; border-radius:3px; border:none; font-family:'Orbitron',monospace; font-size:11px; font-weight:600; cursor:pointer; transition:opacity 0.15s,transform 0.1s,box-shadow 0.15s; letter-spacing:1px; text-transform:uppercase; }
-  .btn:active { transform:scale(0.97); }
-  .btn-primary { background:var(--accent); color:#000; box-shadow:0 0 16px rgba(0,184,255,0.3); }
-  .btn-primary:hover { box-shadow:0 0 24px rgba(0,184,255,0.5); }
-  .btn-secondary { background:var(--surface2); color:var(--text); border:1px solid rgba(0,184,255,0.15); }
-  .btn-danger { background:rgba(255,23,68,0.1); color:var(--out); border:1px solid rgba(255,23,68,0.25); }
-  .btn-reset { background:rgba(255,255,255,0.05); color:var(--muted); border:1px solid rgba(255,255,255,0.08); font-size:10px; padding:6px 12px; }
-  .btn-green { background:rgba(0,229,160,0.15); color:var(--green); border:1px solid rgba(0,229,160,0.3); }
-  .btn:disabled { opacity:0.3; cursor:not-allowed; box-shadow:none; }
-
-  .info-card { background:var(--surface); border-radius:4px; padding:12px 14px; font-size:12px; line-height:1.7; color:var(--muted); border:1px solid rgba(0,184,255,0.1); border-left:2px solid var(--accent); font-family:'Share Tech Mono',monospace; }
-  .info-card strong { color:var(--accent); font-weight:600; }
-  .info-card.success { border-left-color:var(--green); }
-  .info-card.success strong { color:var(--green); }
-
-  /* === KAMERAN VALINTA === */
-  .cam-select-screen { display:flex; flex-direction:column; gap:14px; }
-  .welcome-card { background:var(--surface); border:1px solid rgba(0,184,255,0.15); border-radius:4px; padding:20px; position:relative; overflow:hidden; text-align:center; }
-  .welcome-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--accent),transparent); animation:scan 3s linear infinite; }
-  .welcome-title { font-family:'Orbitron',monospace; font-size:14px; font-weight:700; color:var(--accent); letter-spacing:2px; text-transform:uppercase; margin-bottom:8px; }
-  .welcome-desc { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--muted); line-height:1.8; }
-  .welcome-desc span { color:var(--gold); }
-
-  /* Kenttäprofiili badge */
-  .profile-badge {
-    display:flex; align-items:center; gap:10px;
-    background:rgba(0,229,160,0.08);
-    border:1px solid rgba(0,229,160,0.25);
-    border-radius:4px; padding:10px 14px;
+  /* NAPIT */
+  .btn {
+    padding: 12px 20px; border-radius: 12px; border: none;
+    font-family: 'Nunito', sans-serif; font-size: 15px; font-weight: 800;
+    cursor: pointer; transition: all 0.15s; letter-spacing: 0.3px;
   }
-  .profile-dot { width:8px; height:8px; border-radius:50%; background:var(--green); flex-shrink:0; }
-  .profile-text { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--green); flex:1; }
-  .profile-sub { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--muted); margin-top:2px; }
+  .btn:active { transform: scale(0.96); }
+  .btn-primary { background: var(--accent); color: #0d1f0d; }
+  .btn-primary:hover { background: #a7f3c0; }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1.5px solid rgba(134,239,172,0.2); }
+  .btn-ghost { background: transparent; color: var(--muted); font-size: 13px; font-weight: 600; padding: 8px 14px; }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
-  .cam-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
-  .cam-card { background:var(--surface); border:1px solid rgba(0,184,255,0.12); border-radius:4px; padding:14px 12px; cursor:pointer; transition:all 0.2s; text-align:center; display:flex; flex-direction:column; gap:6px; align-items:center; }
-  .cam-card:hover { border-color:var(--accent); background:rgba(0,184,255,0.05); }
-  .cam-card.selected { border-color:var(--accent); background:rgba(0,184,255,0.08); box-shadow:0 0 12px rgba(0,184,255,0.2); }
-  .cam-card-num { font-family:'Orbitron',monospace; font-size:22px; font-weight:900; color:var(--accent); }
-  .cam-card-label { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:1px; line-height:1.4; }
+  /* KORTIT */
+  .card {
+    background: var(--surface);
+    border-radius: 16px; padding: 16px;
+    border: 1.5px solid rgba(134,239,172,0.1);
+  }
+  .card-title { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
 
-  /* === KENTTÄKALIBROINTI === */
-  .calib-screen { display:none; flex-direction:column; gap:14px; }
+  /* === NÄYTTÖ 1: ALOITUS === */
+  #screen-select {
+    padding: 16px;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+
+  .hero-card {
+    background: var(--court);
+    border-radius: 20px; padding: 20px;
+    text-align: center;
+    position: relative; overflow: hidden;
+  }
+  .hero-card::before {
+    content: ''; position: absolute;
+    top:0; left:0; right:0; bottom:0;
+    background: repeating-linear-gradient(
+      45deg, transparent, transparent 10px,
+      rgba(255,255,255,0.02) 10px, rgba(255,255,255,0.02) 11px
+    );
+  }
+  .hero-emoji { font-size: 48px; display: block; margin-bottom: 8px; }
+  .hero-title { font-size: 22px; font-weight: 900; color: var(--white); margin-bottom: 4px; }
+  .hero-sub { font-size: 13px; color: rgba(240,236,224,0.7); line-height: 1.5; }
+
+  .profile-ok {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(74,222,128,0.08);
+    border: 1.5px solid rgba(74,222,128,0.25);
+    border-radius: 12px; padding: 10px 14px;
+  }
+  .profile-ok-dot { width:10px; height:10px; border-radius:50%; background:var(--in); animation: pulse-green 2s infinite; flex-shrink:0; }
+  .profile-ok-text { font-size: 13px; font-weight: 700; color: var(--in); flex:1; }
+  .profile-ok-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+
+  .cam-label { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .cam-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .cam-tile {
+    background: var(--surface2);
+    border: 2px solid rgba(134,239,172,0.12);
+    border-radius: 14px; padding: 16px 10px;
+    cursor: pointer; transition: all 0.2s;
+    text-align: center; display: flex; flex-direction: column; gap: 4px; align-items: center;
+  }
+  .cam-tile:active { transform: scale(0.96); }
+  .cam-tile.selected { border-color: var(--accent); background: rgba(134,239,172,0.08); }
+  .cam-tile-num { font-size: 28px; font-weight: 900; color: var(--accent); line-height: 1; }
+  .cam-tile-label { font-size: 11px; font-weight: 700; color: var(--muted); line-height: 1.3; }
+  .cam-tile.selected .cam-tile-label { color: var(--accent); }
+
+  /* === NÄYTTÖ 2: KALIBROINTI === */
+  #screen-calib {
+    padding: 16px;
+    display: none; flex-direction: column; gap: 14px;
+  }
+
+  .calib-header { display:flex; align-items:center; gap:10px; }
+  .calib-emoji { font-size: 28px; }
+  .calib-title { font-size: 18px; font-weight: 900; color: var(--text); }
+  .calib-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
 
   .calib-video-wrap {
-    position:relative; border-radius:4px; overflow:hidden;
-    background:#000; cursor:crosshair; touch-action:none;
-    border:1px solid rgba(0,184,255,0.2);
+    position: relative; border-radius: 14px; overflow: hidden;
+    background: #000; cursor: crosshair; touch-action: none;
+    border: 2px solid rgba(134,239,172,0.2);
   }
   #calib-video { width:100%; display:block; max-height:50vh; object-fit:contain; }
   #calib-canvas { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; }
   #calib-click { position:absolute; top:0; left:0; width:100%; height:100%; }
 
-  .calib-progress {
-    display:flex; gap:6px;
-  }
-  .calib-step-dot {
-    flex:1; height:4px; border-radius:2px;
-    background:rgba(0,184,255,0.15);
-    transition:background 0.3s;
-  }
-  .calib-step-dot.done { background:var(--green); }
-  .calib-step-dot.active { background:var(--accent); }
+  .calib-dots { display:flex; gap:6px; }
+  .calib-dot { flex:1; height:5px; border-radius:3px; background:rgba(134,239,172,0.1); transition:background 0.3s; }
+  .calib-dot.done { background: var(--in); }
+  .calib-dot.active { background: var(--accent); }
 
-  /* Net midpoint step */
-  .net-step { display:flex; flex-direction:column; gap:8px; }
+  .calib-hint {
+    background: rgba(134,239,172,0.06);
+    border: 1.5px solid rgba(134,239,172,0.15);
+    border-radius: 12px; padding: 12px 14px;
+    font-size: 14px; font-weight: 700; color: var(--accent);
+    text-align: center;
+  }
+  .calib-hint span { font-size: 12px; font-weight: 600; color: var(--muted); display: block; margin-top: 3px; }
 
-  /* === KUVAUS + HAASTO === */
-  .recording-screen { display:none; flex-direction:column; gap:14px; }
-  .camera-view { position:relative; border-radius:4px; overflow:hidden; background:#000; border:1px solid rgba(0,184,255,0.2); aspect-ratio:16/9; display:flex; align-items:center; justify-content:center; }
+  /* === NÄYTTÖ 3: KUVAUS === */
+  #screen-recording {
+    display: none; flex-direction: column;
+    flex: 1;
+  }
+
+  .camera-view {
+    position: relative; overflow: hidden;
+    background: #000;
+    flex: 1; min-height: 200px;
+    display: flex; align-items: center; justify-content: center;
+  }
   #camera-feed { width:100%; height:100%; object-fit:cover; display:block; }
-  .camera-overlay { position:absolute; top:0; left:0; right:0; bottom:0; pointer-events:none; }
-  .rec-badge { position:absolute; top:10px; left:10px; display:flex; align-items:center; gap:6px; background:rgba(0,0,0,0.7); padding:4px 10px; border-radius:3px; font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--out); letter-spacing:1px; }
-  .rec-dot { width:6px; height:6px; border-radius:50%; background:var(--out); animation:recording-pulse 1s infinite; }
-  .buffer-badge { position:absolute; top:10px; right:10px; background:rgba(0,0,0,0.7); padding:4px 10px; border-radius:3px; font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:1px; }
-  .cam-label-overlay { position:absolute; bottom:10px; left:10px; background:rgba(0,0,0,0.7); padding:4px 10px; border-radius:3px; font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--accent); letter-spacing:1px; }
-  .no-camera-msg { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--muted); text-align:center; padding:20px; line-height:1.7; }
 
-  .haasto-btn { width:100%; padding:40px 20px; border-radius:8px; border:3px solid var(--out); background:rgba(255,23,68,0.15); color:var(--out); font-family:'Orbitron',monospace; font-size:34px; font-weight:900; cursor:pointer; letter-spacing:6px; text-transform:uppercase; transition:all 0.15s; box-shadow:0 0 30px rgba(255,23,68,0.2),inset 0 0 30px rgba(255,23,68,0.05); position:relative; overflow:hidden; }
-  .haasto-btn::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,transparent,var(--out),transparent); animation:scan 2s linear infinite; }
-  .haasto-btn:hover { background:rgba(255,23,68,0.25); box-shadow:0 0 50px rgba(255,23,68,0.4); transform:scale(1.01); }
-  .haasto-btn:active { transform:scale(0.98); }
-  .haasto-btn.pressed { background:rgba(255,23,68,0.3); border-color:#ff6666; box-shadow:0 0 60px rgba(255,23,68,0.6); color:#ff6666; }
-  .haasto-sub { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--muted); text-align:center; letter-spacing:1px; margin-top:-8px; }
+  .cam-hud {
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 10px;
+  }
+  .hud-top { display:flex; justify-content:space-between; align-items:flex-start; }
+  .hud-bottom { display:flex; justify-content:space-between; align-items:flex-end; }
 
-  /* === ANALYYSI === */
-  .analysis-screen { display:none; flex-direction:column; gap:14px; }
-  .timeline-wrap { background:var(--surface); border:1px solid rgba(0,184,255,0.15); border-radius:4px; padding:14px; }
-  .timeline-title { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; margin-bottom:10px; }
-  #timeline-canvas { width:100%; height:60px; border-radius:3px; cursor:pointer; display:block; }
-  .timeline-hint { font-family:'Share Tech Mono',monospace; font-size:10px; color:var(--muted); margin-top:6px; text-align:center; }
-  .timeline-labels { display:flex; justify-content:space-between; font-family:'Share Tech Mono',monospace; font-size:9px; color:var(--muted); margin-top:4px; }
+  .hud-pill {
+    display: flex; align-items: center; gap: 5px;
+    background: rgba(0,0,0,0.6);
+    padding: 4px 10px; border-radius: 20px;
+    font-family: 'Space Mono', monospace; font-size: 10px;
+    font-weight: 700; letter-spacing: 0.5px;
+  }
 
-  #video-wrap { position:relative; border-radius:4px; overflow:hidden; background:#000; cursor:crosshair; touch-action:none; border:1px solid rgba(0,184,255,0.2); }
-  #video-wrap video { width:100%; display:block; max-height:48vh; object-fit:contain; }
+  .voice-hud {
+    display: flex; align-items: center; gap: 5px;
+    background: rgba(0,0,0,0.6);
+    padding: 4px 10px; border-radius: 20px;
+    font-family: 'Space Mono', monospace; font-size: 10px;
+    font-weight: 700; letter-spacing: 0.5px;
+  }
+
+  #voice-flash-overlay {
+    display: none; position: absolute; top:0; left:0; right:0; bottom:0;
+    border: 4px solid var(--out); border-radius: 0;
+    background: rgba(239,68,68,0.15);
+    pointer-events: none;
+    animation: flash-red 0.4s;
+  }
+
+  .no-cam-placeholder {
+    display: none; flex-direction: column; align-items: center;
+    justify-content: center; gap: 10px; padding: 30px;
+    color: var(--muted); text-align: center; font-size: 14px; font-weight: 600;
+  }
+
+  /* HAASTO-alue */
+  .haasto-area {
+    padding: 12px 16px 20px;
+    display: flex; flex-direction: column; gap: 10px;
+    background: var(--bg);
+  }
+
+  .haasto-btn {
+    width: 100%; padding: 36px 20px;
+    border-radius: 20px;
+    border: 3px solid var(--out);
+    background: rgba(239,68,68,0.12);
+    color: var(--out);
+    font-family: 'Nunito', sans-serif;
+    font-size: 40px; font-weight: 900;
+    cursor: pointer; letter-spacing: 2px;
+    transition: all 0.12s;
+    position: relative; overflow: hidden;
+    box-shadow: 0 4px 24px rgba(239,68,68,0.15);
+    text-align: center;
+  }
+  .haasto-btn::after {
+    content: ''; position: absolute;
+    top: 0; left: 0; right: 0; height: 3px;
+    background: linear-gradient(90deg, transparent, var(--out), transparent);
+    animation: scan 2s linear infinite;
+  }
+  .haasto-btn:active { transform: scale(0.97); background: rgba(239,68,68,0.25); }
+  .haasto-btn.pressed { background: rgba(239,68,68,0.2); border-color: #fca5a5; color: #fca5a5; }
+  .haasto-sub { font-size: 12px; font-weight: 600; color: var(--muted); text-align: center; }
+
+  /* Merkityt haastot */
+  .marks-list { display: flex; flex-direction: column; gap: 6px; }
+  .mark-item {
+    display: flex; align-items: center; justify-content: space-between;
+    background: rgba(239,68,68,0.06);
+    border: 1.5px solid rgba(239,68,68,0.2);
+    border-radius: 12px; padding: 10px 14px;
+    animation: slide-up 0.2s;
+  }
+  .mark-time { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--out); font-weight: 700; }
+  .mark-label { font-size: 12px; color: var(--muted); margin-top: 1px; }
+  .mark-open-btn {
+    padding: 6px 14px; border-radius: 8px;
+    background: var(--out); color: #fff; border: none;
+    font-family: 'Nunito', sans-serif; font-size: 13px; font-weight: 800;
+    cursor: pointer; flex-shrink: 0;
+  }
+  .mark-open-btn:active { transform: scale(0.95); }
+
+  /* === NÄYTTÖ 4: ANALYYSI === */
+  #screen-analysis {
+    padding: 16px;
+    display: none; flex-direction: column; gap: 12px;
+  }
+
+  .analysis-header {
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .analysis-title { font-size: 16px; font-weight: 900; color: var(--text); }
+  .analysis-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+
+  .timeline-card {
+    background: var(--surface);
+    border-radius: 14px; padding: 12px;
+    border: 1.5px solid rgba(134,239,172,0.1);
+  }
+  .timeline-label { font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  #timeline-canvas { width:100%; height:56px; border-radius:6px; cursor:pointer; display:block; background: rgba(0,0,0,0.3); }
+  .timeline-times { display:flex; justify-content:space-between; font-family:'Space Mono',monospace; font-size:9px; color: var(--muted); margin-top:4px; }
+  .timeline-hint { font-size: 11px; color: var(--muted); text-align: center; margin-top: 4px; font-weight: 600; }
+
+  #video-wrap {
+    position: relative; border-radius: 14px; overflow: hidden;
+    background: #000; cursor: crosshair; touch-action: none;
+    border: 2px solid rgba(134,239,172,0.15);
+  }
+  #video-wrap video { width:100%; display:block; max-height:45vh; object-fit:contain; }
   #court-canvas { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; }
   #click-canvas { position:absolute; top:0; left:0; width:100%; height:100%; }
 
-  .scrubber-wrap { display:flex; align-items:center; gap:10px; }
-  #scrubber { flex:1; accent-color:var(--accent); }
-  .time-label { font-family:'Share Tech Mono',monospace; font-size:11px; color:var(--accent); min-width:76px; }
-  .controls { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-  .mode-badge { display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:3px; font-family:'Share Tech Mono',monospace; font-size:10px; font-weight:500; letter-spacing:1.5px; text-transform:uppercase; border:1px solid currentColor; }
-  .mode-ball { color:var(--gold); background:rgba(255,193,7,0.07); border-color:var(--gold); }
-  .dot { width:5px; height:5px; border-radius:50%; background:currentColor; animation:blink 1s infinite; }
-  .phase-row { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+  .video-controls {
+    display: flex; gap: 8px; align-items: center;
+  }
+  #scrubber { flex:1; accent-color: var(--accent); }
+  .time-badge {
+    font-family: 'Space Mono', monospace; font-size: 11px;
+    color: var(--accent); min-width: 70px; text-align: right;
+  }
+  .frame-btns { display: flex; gap: 6px; }
 
-  /* === TULOS === */
-  #result-section { display:none; border-radius:4px; padding:28px 20px; text-align:center; flex-direction:column; align-items:center; gap:12px; animation:reveal 0.4s cubic-bezier(0.16,1,0.3,1); position:relative; overflow:hidden; }
-  #result-section::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
-  #result-section.in-result { background:rgba(0,229,255,0.06); border:1px solid rgba(0,229,255,0.25); }
-  #result-section.in-result::before { background:var(--in); }
-  #result-section.out-result { background:rgba(255,23,68,0.06); border:1px solid rgba(255,23,68,0.25); }
-  #result-section.out-result::before { background:var(--out); }
-  .result-label { font-family:'Share Tech Mono',monospace; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--muted); }
-  .result-verdict { font-family:'Orbitron',monospace; font-size:56px; font-weight:900; letter-spacing:6px; line-height:1; }
-  .in-result .result-verdict { color:var(--in); text-shadow:0 0 30px rgba(0,229,255,0.5); }
-  .out-result .result-verdict { color:var(--out); text-shadow:0 0 30px rgba(255,23,68,0.5); }
-  .result-detail { font-size:11px; color:var(--muted); font-family:'Share Tech Mono',monospace; letter-spacing:1px; }
-  .result-distance { font-size:14px; color:var(--text); font-family:'Share Tech Mono',monospace; letter-spacing:1px; }
+  .step-hint {
+    background: rgba(134,239,172,0.06);
+    border: 1.5px solid rgba(134,239,172,0.15);
+    border-radius: 12px; padding: 12px 14px;
+    font-size: 14px; font-weight: 700; color: var(--accent);
+  }
+  .step-hint span { font-size: 12px; font-weight: 600; color: var(--muted); display:block; margin-top:3px; }
+
+  /* === NÄYTTÖ 5: TULOS === */
+  #screen-result {
+    padding: 20px 16px;
+    display: none; flex-direction: column; gap: 14px;
+    align-items: center; text-align: center;
+    animation: bounce-in 0.4s;
+  }
+
+  .result-card {
+    width: 100%; border-radius: 24px; padding: 32px 20px;
+    position: relative; overflow: hidden;
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+  }
+  .result-card.in-card { background: rgba(74,222,128,0.08); border: 2.5px solid rgba(74,222,128,0.4); }
+  .result-card.out-card { background: rgba(248,113,113,0.08); border: 2.5px solid rgba(248,113,113,0.4); }
+
+  .result-emoji { font-size: 52px; }
+  .result-verdict {
+    font-size: 64px; font-weight: 900; line-height: 1;
+    letter-spacing: 3px;
+  }
+  .in-card .result-verdict { color: var(--in); }
+  .out-card .result-verdict { color: var(--out); }
+  .result-dist { font-size: 18px; font-weight: 800; color: var(--text); }
+  .result-meta { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); }
+  .result-zone { font-size: 14px; font-weight: 700; color: var(--gold); }
+
+  .result-actions { display:flex; gap:8px; width:100%; }
+  .result-actions .btn { flex: 1; }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="header-left">
-    <div class="hawk-eye-logo"></div>
+  <div class="logo">
+    <span class="logo-icon">🎾</span>
     <div>
-      <h1>Hawk-Eye Judge</h1>
-      <div class="header-tag">Ball Tracking System v4.0</div>
+      <div class="logo-text">Viivajudge</div>
+      <div class="logo-sub">v5.0</div>
     </div>
   </div>
-  <div class="live-indicator"><div class="live-dot"></div> <span id="header-status">VALMIINA</span></div>
+  <div class="ready-pill" id="header-pill">
+    <div style="width:7px;height:7px;border-radius:50%;background:currentColor"></div>
+    <span id="header-status">Valmis</span>
+  </div>
 </header>
-
-<div class="steps">
-  <div class="step active" id="s1"><span class="step-num">1</span> Kamera</div>
-  <span class="step-sep">›</span>
-  <div class="step" id="s2"><span class="step-num">2</span> Kuvaus</div>
-  <span class="step-sep">›</span>
-  <div class="step" id="s3"><span class="step-num">3</span> Analyysi</div>
-  <span class="step-sep">›</span>
-  <div class="step" id="s4"><span class="step-num">4</span> Tulos</div>
-</div>
 
 <main>
 
-  <!-- VAIHE 1: Kameran valinta -->
-  <div class="cam-select-screen" id="screen-select">
+  <!-- NÄYTTÖ 1: Aloitus -->
+  <div id="screen-select">
 
-    <div class="welcome-card">
-      <div class="welcome-title">Hawk-Eye Judge</div>
-      <div class="welcome-desc">
-        Valitse kameran kulma ja käynnistä kuvaus.<br>
-        <span>Kiistatilanteessa: kävele kameralle → HAASTO</span>
-      </div>
+    <div class="hero-card">
+      <span class="hero-emoji">🎾</span>
+      <div class="hero-title">Viivajudge</div>
+      <div class="hero-sub">Kiistatilanteessa huuda <strong style="color:#fbbf24">HAASTO</strong><br>— puhelin merkitsee hetken automaattisesti.</div>
     </div>
 
-    <!-- Kenttäprofiili — näkyy jos kalibroitu -->
-    <div class="profile-badge" id="profile-badge" style="display:none">
-      <div class="profile-dot"></div>
+    <div class="profile-ok" id="profile-badge" style="display:none">
+      <div class="profile-ok-dot"></div>
       <div>
-        <div class="profile-text">Kenttäprofiili tallennettu</div>
-        <div class="profile-sub" id="profile-sub">Kalibroitu — ei tarvita uudelleen</div>
+        <div class="profile-ok-text">✓ Kenttä kalibroitu</div>
+        <div class="profile-ok-sub" id="profile-sub">Valmis käyttöön</div>
       </div>
-      <button class="btn-reset" onclick="resetCalibration()" style="padding:4px 8px;font-size:9px;border-radius:3px;background:rgba(255,255,255,0.05);color:var(--muted);border:1px solid rgba(255,255,255,0.08);cursor:pointer;font-family:Share Tech Mono,monospace;letter-spacing:1px">NOLLAA</button>
+      <button onclick="resetCalibration()" style="padding:4px 10px;border-radius:8px;background:rgba(255,255,255,0.06);color:var(--muted);border:1px solid rgba(255,255,255,0.1);cursor:pointer;font-size:12px;font-weight:700;font-family:Nunito,sans-serif;">Nollaa</button>
     </div>
 
-    <div class="cam-grid">
-      <div class="cam-card" id="cam-card-0" onclick="selectCam(0)">
-        <div class="cam-card-num">1</div>
-        <div class="cam-card-label">Vasen<br>takakulma</div>
-      </div>
-      <div class="cam-card" id="cam-card-1" onclick="selectCam(1)">
-        <div class="cam-card-num">2</div>
-        <div class="cam-card-label">Oikea<br>takakulma</div>
-      </div>
-      <div class="cam-card" id="cam-card-2" onclick="selectCam(2)">
-        <div class="cam-card-num">3</div>
-        <div class="cam-card-label">Vasen<br>etukulma</div>
-      </div>
-      <div class="cam-card" id="cam-card-3" onclick="selectCam(3)">
-        <div class="cam-card-num">4</div>
-        <div class="cam-card-label">Oikea<br>etukulma</div>
-      </div>
-    </div>
-
-    <button class="btn btn-primary" id="start-btn" onclick="checkCalibrationAndStart()" disabled>
-      Käynnistä kamera →
+    <button class="btn btn-primary" id="start-btn" onclick="checkCalibAndStart()" style="width:100%;font-size:17px;padding:16px;">
+      🎬 Käynnistä kamera
     </button>
 
-    <button class="btn btn-secondary" id="calib-btn" onclick="startCalibration()" style="display:none">
-      Kalibroi kenttä ensin →
+    <button class="btn btn-secondary" id="calib-btn" onclick="startCalibration()" style="display:none;width:100%;">
+      📐 Kalibroi kenttä ensin
     </button>
 
-    <div class="info-card" id="select-info">
-      <strong>Ennen peliä</strong><br>
-      Valitse kulma ja paina "Käynnistä kamera".<br>
-      Ensimmäisellä kerralla sovellus pyytää kalibroimaan kentän — se tehdään vain kerran.
-    </div>
+    <p id="select-info" style="font-size:13px;color:var(--muted);text-align:center;line-height:1.6;font-weight:600;">
+      Ensimmäisellä kerralla pyydetään kalibroimaan kenttä kerran.
+    </p>
   </div>
 
-  <!-- KENTTÄKALIBROINTI -->
-  <div class="calib-screen" id="screen-calib">
-
-    <div class="info-card" id="calib-info">
-      <strong>Kenttäkalibrointi — kerran riittää</strong><br>
-      Kuvaa kenttä siten että kaikki neljä kulmaa näkyvät. Napauta sitten kulmat järjestyksessä.
+  <!-- NÄYTTÖ 2: Kalibrointi -->
+  <div id="screen-calib">
+    <div class="calib-header">
+      <span class="calib-emoji">📐</span>
+      <div>
+        <div class="calib-title">Kalibroi kenttä</div>
+        <div class="calib-sub">Tehdään kerran — sovellus muistaa sen aina</div>
+      </div>
     </div>
 
-    <!-- Valinta: kuvaa nyt tai lataa video -->
-    <div id="calib-source" style="display:flex;flex-direction:column;gap:8px">
-      <button class="btn btn-primary" onclick="startCalibCamera()">Kuvaa kenttä nyt →</button>
-      <button class="btn btn-secondary" onclick="document.getElementById('calib-file').click()">Lataa video kentästä</button>
+    <div id="calib-source" style="display:flex;flex-direction:column;gap:8px;">
+      <button class="btn btn-primary" onclick="startCalibCamera()" style="width:100%;">📷 Kuvaa kenttä nyt</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('calib-file').click()" style="width:100%;">📁 Lataa kuva tai video</button>
       <input type="file" id="calib-file" accept="video/*,image/*" style="display:none">
     </div>
 
-    <!-- Kalibrointivideo/kuva -->
     <div class="calib-video-wrap" id="calib-wrap" style="display:none">
       <video id="calib-video" playsinline muted></video>
       <canvas id="calib-canvas"></canvas>
       <canvas id="calib-click"></canvas>
     </div>
 
-    <div class="calib-progress" id="calib-progress" style="display:none">
-      <div class="calib-step-dot active" id="cdot-0"></div>
-      <div class="calib-step-dot" id="cdot-1"></div>
-      <div class="calib-step-dot" id="cdot-2"></div>
-      <div class="calib-step-dot" id="cdot-3"></div>
-      <div class="calib-step-dot" id="cdot-net"></div>
+    <div class="calib-dots" id="calib-progress" style="display:none">
+      <div class="calib-dot active" id="cdot-0"></div>
+      <div class="calib-dot" id="cdot-1"></div>
+      <div class="calib-dot" id="cdot-2"></div>
+      <div class="calib-dot" id="cdot-3"></div>
+      <div class="calib-dot" id="cdot-net"></div>
     </div>
 
-    <div class="info-card" id="calib-step-info" style="display:none">
-      <strong id="calib-step-title">Napauta: vasen takakulma</strong><br>
-      <span id="calib-step-desc">Kentän vasen takakulma — perusviivan ja sivuviivan leikkauspiste</span>
+    <div class="calib-hint" id="calib-step-info" style="display:none">
+      <div id="calib-step-title">Napauta: vasen takakulma</div>
+      <span id="calib-step-desc">Kentän vasen takakulma</span>
     </div>
 
-    <div style="display:flex;gap:8px" id="calib-btns" style="display:none">
-      <button class="btn btn-reset" onclick="undoCalibPoint()">← Peruuta viimeisin</button>
-      <button class="btn btn-reset" onclick="cancelCalibration()">Peruuta</button>
+    <div style="display:flex;gap:8px;" id="calib-btns" style="display:none">
+      <button class="btn btn-secondary" onclick="undoCalibPoint()" style="flex:1">← Peruuta</button>
+      <button class="btn btn-ghost" onclick="cancelCalibration()">Poistu</button>
     </div>
   </div>
 
-  <!-- VAIHE 2: Kuvaus + HAASTO -->
-  <div class="recording-screen" id="screen-recording">
+  <!-- NÄYTTÖ 3: Kuvaus + HAASTO -->
+  <div id="screen-recording">
+
     <div class="camera-view">
       <video id="camera-feed" autoplay playsinline muted></video>
-      <div class="camera-overlay">
-        <div class="rec-badge"><div class="rec-dot"></div> REC</div>
-        <div class="buffer-badge" id="buffer-badge">Puskuri: 0s</div>
-        <div class="cam-label-overlay" id="cam-label-overlay">CAM 1</div>
-        <div id="voice-flash" style="display:none;position:absolute;top:0;left:0;right:0;bottom:0;background:rgba(255,23,68,0.25);border:3px solid #ff1744;border-radius:4px;pointer-events:none;"></div>
+      <div class="cam-hud">
+        <div class="hud-top">
+          <div class="hud-pill" style="color:var(--out);">
+            <div class="rec-dot"></div> REC
+          </div>
+          <div class="hud-pill" id="buffer-badge" style="color:var(--muted);">Puskuri: 0s</div>
+        </div>
+        <div class="hud-bottom">
+          <div class="hud-pill" id="cam-label-overlay" style="color:var(--accent);">Kulma 1</div>
+          <div class="voice-hud" id="voice-hud" style="color:var(--muted);">
+            <div id="voice-dot" style="width:7px;height:7px;border-radius:50%;background:var(--muted);"></div>
+            <span id="voice-label">Käynnistyy...</span>
+          </div>
+        </div>
       </div>
-      <div class="no-camera-msg" id="no-camera-msg" style="display:none">
-        Kamera ei käytettävissä.<br>Paina HAASTO ja lataa video manuaalisesti.
+      <div id="voice-flash-overlay"></div>
+      <div class="no-cam-placeholder" id="no-camera-msg">
+        <span style="font-size:40px">📵</span>
+        <span>Kamera ei käytettävissä.<br>Käytä HAASTO-nappia ja lataa video käsin.</span>
       </div>
     </div>
 
-    <!-- Äänitunnistuksen tila -->
-    <div id="voice-status" style="display:flex;align-items:center;gap:8px;padding:8px 12px;background:var(--surface);border:1px solid rgba(0,184,255,0.1);border-radius:4px;">
-      <div id="voice-dot" style="width:8px;height:8px;border-radius:50%;background:var(--muted);flex-shrink:0;"></div>
-      <span id="voice-label" style="font-family:Share Tech Mono,monospace;font-size:10px;color:var(--muted);letter-spacing:1px;">ÄÄNITUNNISTUS KÄYNNISTYY...</span>
+    <div class="haasto-area">
+
+      <!-- Merkityt haastot -->
+      <div id="marks-wrap" style="display:none">
+        <div style="font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;">📌 Merkityt tilanteet</div>
+        <div class="marks-list" id="marks-list"></div>
+      </div>
+
+      <button class="haasto-btn" id="haasto-btn" onclick="pressHaasto()">
+        ⚡ HAASTO
+      </button>
+      <div class="haasto-sub">Huuda "HAASTO" tai paina nappia — hetki merkitään automaattisesti</div>
+
+      <button class="btn btn-ghost" onclick="goBack()" style="align-self:center;">← Vaihda kulmaa</button>
     </div>
-
-    <!-- Merkityt hetket -->
-    <div id="marks-section" style="display:none;flex-direction:column;gap:6px;">
-      <div style="font-family:Share Tech Mono,monospace;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;">Merkityt haastot</div>
-      <div id="marks-list" style="display:flex;flex-direction:column;gap:6px;"></div>
-    </div>
-
-    <button class="haasto-btn" id="haasto-btn" onclick="pressHaasto()">⚡ HAASTO</button>
-    <div class="haasto-sub">Huuda "HAASTO" tai paina nappia — hetki merkitään automaattisesti</div>
-
-    <div class="info-card" id="recording-info">
-      <strong>Kuvaus käynnissä</strong><br>
-      Puhelin kuuntelee "HAASTO"-huutoa jatkuvasti.<br>
-      Kun huudat, hetki merkitään automaattisesti — voit palata siihen myöhemmin.
-    </div>
-
-    <button class="btn btn-reset" onclick="goBack()">← Takaisin</button>
   </div>
 
-  <!-- VAIHE 3: Analyysi -->
-  <div class="analysis-screen" id="screen-analysis">
+  <!-- NÄYTTÖ 4: Analyysi -->
+  <div id="screen-analysis">
 
-    <div class="phase-row">
-      <span class="mode-badge mode-ball" id="phase-badge"><span class="dot"></span> Merkitse pallo</span>
-      <button class="btn btn-reset" onclick="backToRecording()">← Uusi haasto</button>
+    <div class="analysis-header">
+      <div>
+        <div class="analysis-title">🔍 Katso tilanne</div>
+        <div class="analysis-sub" id="analysis-sub">Etsi osumakohta ja merkitse pallo</div>
+      </div>
+      <button class="btn btn-ghost" onclick="backToRecording()">← Takaisin</button>
     </div>
 
-    <div class="timeline-wrap">
-      <div class="timeline-title">Ääniraidat — napauta lyöntihetkeä</div>
-      <canvas id="timeline-canvas" height="60"></canvas>
-      <div class="timeline-labels">
-        <span>-60s</span><span>-30s</span><span>HAASTO</span>
-      </div>
-      <div class="timeline-hint">Napauta aikajanalta kohtaa jossa lyöntiääni näkyy piikkinä</div>
+    <div class="timeline-card">
+      <div class="timeline-label">🔊 Lyöntiäänet — napauta oikeaa hetkeä</div>
+      <canvas id="timeline-canvas" height="56"></canvas>
+      <div class="timeline-times"><span>-60s</span><span>-30s</span><span>Nyt</span></div>
+      <div class="timeline-hint">Napauta aikajanalta kohtaa jossa lyöntiääni on voimakkain</div>
     </div>
 
     <div id="video-wrap">
@@ -372,36 +517,42 @@
       <canvas id="click-canvas"></canvas>
     </div>
 
-    <div class="scrubber-wrap">
-      <button class="btn btn-secondary" id="play-btn" onclick="togglePlay()" style="padding:8px 14px;font-size:13px">▶</button>
+    <div class="video-controls">
+      <button class="btn btn-secondary frame-btn" onclick="togglePlay()" id="play-btn" style="padding:10px 14px;font-size:16px;">▶</button>
       <input type="range" id="scrubber" min="0" max="100" step="0.1" value="0">
-      <span class="time-label" id="time-label">0.00 / 0.00</span>
+      <div class="time-badge" id="time-label">0:00</div>
     </div>
 
-    <div class="controls">
-      <button class="btn btn-secondary" onclick="stepFrame(-1)">‹ Kehys</button>
-      <button class="btn btn-secondary" onclick="stepFrame(1)">Kehys ›</button>
-      <button class="btn btn-primary" id="action-btn" onclick="calculateResult()" disabled>Laske tulos →</button>
+    <div style="display:flex;gap:6px;">
+      <button class="btn btn-secondary" onclick="stepFrame(-1)" style="flex:1">‹ Kehys</button>
+      <button class="btn btn-secondary" onclick="stepFrame(1)" style="flex:1">Kehys ›</button>
     </div>
 
-    <div class="info-card" id="instructions">
-      <strong>Merkitse pomppupiste</strong><br>
-      Etsi aikajanalta lyöntihetki ja pysäytä video siihen.<br>
-      Napauta kohtaa jossa pallo osui maahan.
+    <div class="step-hint" id="instructions">
+      <div>👆 Napauta pallon pomppupiste</div>
+      <span>Pysäytä video oikeaan kohtaan, sitten napauta mihin pallo osui</span>
     </div>
+
+    <button class="btn btn-primary" id="action-btn" onclick="calculateResult()" disabled style="width:100%;font-size:17px;padding:16px;">
+      Laske tulos →
+    </button>
   </div>
 
-  <!-- TULOS -->
-  <div id="result-section">
-    <div class="result-label">— Analysis Complete —</div>
-    <div class="result-verdict" id="verdict-text"></div>
-    <div class="result-distance" id="result-dist"></div>
-    <div class="result-detail" id="result-detail"></div>
-    <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap;justify-content:center">
-      <button class="btn btn-secondary" onclick="newAnalysis()">Uusi analyysi</button>
-      <button class="btn btn-primary" onclick="shareResult()">Jaa tulos</button>
-      <button class="btn btn-reset" onclick="backToRecording()">Jatka peliä</button>
+  <!-- NÄYTTÖ 5: Tulos -->
+  <div id="screen-result">
+    <div class="result-card" id="result-card">
+      <div class="result-emoji" id="result-emoji">🎾</div>
+      <div class="result-verdict" id="verdict-text">IN</div>
+      <div class="result-dist" id="result-dist"></div>
+      <div class="result-zone" id="result-zone" style="display:none"></div>
+      <div class="result-meta" id="result-detail"></div>
     </div>
+
+    <div class="result-actions">
+      <button class="btn btn-secondary" onclick="newAnalysis()">🔄 Uusi analyysi</button>
+      <button class="btn btn-primary" onclick="backToRecording()">▶ Jatka peliä</button>
+    </div>
+    <button class="btn btn-ghost" onclick="shareResult()" style="width:100%;">📤 Jaa tulos</button>
   </div>
 
 </main>
@@ -409,25 +560,19 @@
 <input type="file" id="manual-upload" accept="video/*" style="display:none">
 
 <script>
-// === TILA ===
-const BUFFER_SECONDS = 60;
-const STORAGE_KEY = 'hawkeye_court_profile';
+// === VAKIOT JA TILA ===
+const BUFFER_SEC = 60;
+const STORAGE_KEY = 'viivajudge_court_v1';
+const COURT_W = 10.97, COURT_H = 23.77; // tenniskentän mitat metreinä
 
 let selectedCam = -1;
-let mediaStream = null;
-let mediaRecorder = null;
-let recordedChunks = [];
-let bufferInterval = null;
-let bufferSeconds = 0;
-let ballPoint = null;
-let capturedBlob = null;
-let audioData = [];
-
-// Kenttäkalibrointi
-let calibPoints = []; // 4 kenttäkulmaa
-let calibNetPoint = null; // verkon keskipiste
-let calibStream = null;
-let courtProfile = null; // tallennettu profiili
+let mediaStream = null, mediaRecorder = null;
+let recordedChunks = [], bufferSec = 0, bufferTimer = null;
+let speechRec = null;
+let haastoMarks = [], pendingSeekSec = 0;
+let ballPoint = null, audioData = [], capturedBlob = null;
+let courtProfile = null;
+let calibPoints = [], calibNetPoint = null, calibStream = null;
 
 const vid = document.getElementById('vid');
 const courtCanvas = document.getElementById('court-canvas');
@@ -436,85 +581,64 @@ const cc = courtCanvas.getContext('2d');
 const tlCanvas = document.getElementById('timeline-canvas');
 const tlCtx = tlCanvas.getContext('2d');
 
-// === KÄYNNISTYS: lataa tallennettu kenttäprofiili ===
-function loadCourtProfile() {
+// === KENTTÄPROFIILI ===
+function loadProfile() {
   try {
-    const saved = localStorage.getItem(STORAGE_KEY);
-    if (saved) {
-      courtProfile = JSON.parse(saved);
-      document.getElementById('profile-badge').style.display = 'flex';
+    const s = localStorage.getItem(STORAGE_KEY);
+    if (s) {
+      courtProfile = JSON.parse(s);
       const d = new Date(courtProfile.savedAt);
-      document.getElementById('profile-sub').textContent =
-        `Kalibroitu ${d.toLocaleDateString('fi-FI')} — ei tarvita uudelleen`;
+      document.getElementById('profile-badge').style.display = 'flex';
+      document.getElementById('profile-sub').textContent = `Kalibroitu ${d.toLocaleDateString('fi-FI')}`;
       return true;
     }
   } catch(e) {}
   return false;
 }
 
-function saveCourtProfile(points, netPoint) {
-  courtProfile = { points, netPoint, savedAt: Date.now() };
+function saveProfile(pts, net) {
+  courtProfile = { points: pts, netPoint: net, savedAt: Date.now() };
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(courtProfile)); } catch(e) {}
 }
 
 function resetCalibration() {
-  if (!confirm('Nollataan kenttäprofiili? Kalibrointi täytyy tehdä uudelleen.')) return;
+  if (!confirm('Nollataan kenttäprofiili?')) return;
   courtProfile = null;
   try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
   document.getElementById('profile-badge').style.display = 'none';
+  document.getElementById('select-info').textContent = 'Ensimmäisellä kerralla pyydetään kalibroimaan kenttä kerran.';
 }
 
-// === VAIHE 1: KAMERAN VALINTA ===
-function selectCam(index) {
-  selectedCam = index;
-  document.querySelectorAll('.cam-card').forEach(c => c.classList.remove('selected'));
-  document.getElementById('cam-card-' + index).classList.add('selected');
-  document.getElementById('start-btn').disabled = false;
-  document.getElementById('start-btn').style.display = 'block';
-  document.getElementById('calib-btn').style.display = 'none';
-}
-
-function checkCalibrationAndStart() {
+// === KAMERAN VALINTA (poistettu — yksi kamera tuomarintornissa) ===
+function checkCalibAndStart() {
   if (courtProfile) {
     startRecording();
   } else {
-    // Ensimmäinen kerta — näytä kalibrointinappi
     document.getElementById('start-btn').style.display = 'none';
     document.getElementById('calib-btn').style.display = 'block';
-    document.getElementById('select-info').innerHTML =
-      '<strong style="color:var(--gold)">Kenttä ei vielä kalibroitu</strong><br>' +
-      'Ensimmäisellä kerralla täytyy kalibroida kenttä.<br>' +
-      'Se tehdään vain kerran — peli muistaa sen jatkossa.';
+    document.getElementById('select-info').innerHTML = '⚠️ <strong style="color:var(--gold)">Kenttä ei ole vielä kalibroitu.</strong><br>Kalibrointi tehdään kerran — jatkossa suoraan pelaamaan!';
   }
 }
 
-// === KENTTÄKALIBROINTI ===
+// === KALIBROINTI ===
 const calibSteps = [
-  { title: 'Napauta: vasen takakulma', desc: 'Perusviivan ja sivuviivan leikkauspiste — kaukana vasemmalla' },
-  { title: 'Napauta: oikea takakulma', desc: 'Perusviivan ja sivuviivan leikkauspiste — kaukana oikealla' },
-  { title: 'Napauta: oikea etukulma', desc: 'Lähimmän perusviivan ja oikean sivuviivan leikkauspiste' },
-  { title: 'Napauta: vasen etukulma', desc: 'Lähimmän perusviivan ja vasemman sivuviivan leikkauspiste' },
-  { title: 'Napauta: verkon keskipiste', desc: 'Missä kohtaa verkko ylittää kentän keskiviivan' },
+  { title: '📍 Napauta: vasen takakulma', desc: 'Kaukainen vasen kulma — perusviivan ja sivuviivan leikkauspiste' },
+  { title: '📍 Napauta: oikea takakulma', desc: 'Kaukainen oikea kulma' },
+  { title: '📍 Napauta: oikea etukulma', desc: 'Läheinen oikea kulma' },
+  { title: '📍 Napauta: vasen etukulma', desc: 'Läheinen vasen kulma' },
+  { title: '🎾 Napauta: verkon keskipiste', desc: 'Missä verkko ylittää kentän keskilinjan' },
 ];
 
 function startCalibration() {
-  document.getElementById('screen-select').style.display = 'none';
-  document.getElementById('screen-calib').style.display = 'flex';
-  document.getElementById('screen-calib').style.flexDirection = 'column';
-  calibPoints = [];
-  calibNetPoint = null;
-  setStep(1);
+  showScreen('screen-calib');
+  calibPoints = []; calibNetPoint = null;
 }
 
 function cancelCalibration() {
   stopCalibCamera();
-  document.getElementById('screen-calib').style.display = 'none';
-  document.getElementById('screen-select').style.display = 'flex';
-  document.getElementById('screen-select').style.flexDirection = 'column';
+  showScreen('screen-select');
   document.getElementById('start-btn').style.display = 'block';
   document.getElementById('calib-btn').style.display = 'none';
-  document.getElementById('select-info').innerHTML =
-    '<strong>Ennen peliä</strong><br>Valitse kulma ja paina "Käynnistä kamera".<br>Ensimmäisellä kerralla sovellus pyytää kalibroimaan kentän — se tehdään vain kerran.';
 }
 
 async function startCalibCamera() {
@@ -525,17 +649,11 @@ async function startCalibCamera() {
   document.getElementById('calib-btns').style.display = 'flex';
   updateCalibStep();
 
-  const calibVideo = document.getElementById('calib-video');
   try {
-    calibStream = await navigator.mediaDevices.getUserMedia({
-      video: { facingMode: 'environment', width: { ideal: 1280 }, height: { ideal: 720 } },
-      audio: false
-    });
-    calibVideo.srcObject = calibStream;
-    calibVideo.play();
+    calibStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' }, audio: false });
+    const cv = document.getElementById('calib-video');
+    cv.srcObject = calibStream; cv.play();
   } catch(e) {
-    document.getElementById('calib-info').innerHTML =
-      '<strong style="color:var(--out)">Kamera ei käytettävissä</strong><br>Lataa sen sijaan video tai kuva kentästä.';
     document.getElementById('calib-source').style.display = 'flex';
     document.getElementById('calib-source').style.flexDirection = 'column';
     document.getElementById('calib-wrap').style.display = 'none';
@@ -544,167 +662,116 @@ async function startCalibCamera() {
 }
 
 document.getElementById('calib-file').addEventListener('change', e => {
-  const f = e.target.files[0];
-  if (!f) return;
+  const f = e.target.files[0]; if (!f) return;
   document.getElementById('calib-source').style.display = 'none';
   document.getElementById('calib-wrap').style.display = 'block';
   document.getElementById('calib-progress').style.display = 'flex';
   document.getElementById('calib-step-info').style.display = 'block';
   document.getElementById('calib-btns').style.display = 'flex';
-  const calibVideo = document.getElementById('calib-video');
-  calibVideo.src = URL.createObjectURL(f);
-  calibVideo.play();
-  setupCalibCanvas();
-  updateCalibStep();
+  const cv = document.getElementById('calib-video');
+  cv.src = URL.createObjectURL(f); cv.play();
+  setupCalibCanvas(); updateCalibStep();
 });
 
 function setupCalibCanvas() {
-  const wrap = document.getElementById('calib-wrap');
-  const calibVideo = document.getElementById('calib-video');
-  const calibCanvas = document.getElementById('calib-canvas');
-  const calibClick = document.getElementById('calib-click');
-
-  calibVideo.addEventListener('loadeddata', () => {
-    const r = calibVideo.getBoundingClientRect();
-    calibCanvas.width = calibClick.width = r.width || calibVideo.videoWidth;
-    calibCanvas.height = calibClick.height = r.height || calibVideo.videoHeight;
+  const cv = document.getElementById('calib-video');
+  const cc2 = document.getElementById('calib-canvas');
+  const ck = document.getElementById('calib-click');
+  cv.addEventListener('loadeddata', () => {
+    const r = cv.getBoundingClientRect();
+    cc2.width = ck.width = r.width || cv.videoWidth;
+    cc2.height = ck.height = r.height || cv.videoHeight;
     drawCalibPoints();
   });
-
-  calibClick.addEventListener('click', handleCalibClick);
-  calibClick.addEventListener('touchend', e => {
+  ck.addEventListener('click', handleCalibClick);
+  ck.addEventListener('touchend', e => {
     e.preventDefault();
     const t = e.changedTouches[0];
-    const rect = calibClick.getBoundingClientRect();
-    handleCalibClick({ clientX:t.clientX, clientY:t.clientY, _rect:rect });
+    const r = ck.getBoundingClientRect();
+    handleCalibClick({ clientX: t.clientX, clientY: t.clientY, _rect: r });
   });
 }
 
 function handleCalibClick(e) {
-  const rect = e._rect || document.getElementById('calib-click').getBoundingClientRect();
-  const x = (e.clientX - rect.left) / rect.width;
-  const y = (e.clientY - rect.top) / rect.height;
-
-  if (calibPoints.length < 4) {
-    calibPoints.push({x, y});
-  } else if (!calibNetPoint) {
-    calibNetPoint = {x, y};
-    // Kalibrointi valmis!
-    finishCalibration();
-    return;
-  }
-  updateCalibStep();
-  drawCalibPoints();
+  const r = e._rect || document.getElementById('calib-click').getBoundingClientRect();
+  const x = (e.clientX - r.left) / r.width;
+  const y = (e.clientY - r.top) / r.height;
+  if (calibPoints.length < 4) { calibPoints.push({x, y}); }
+  else if (!calibNetPoint) { calibNetPoint = {x, y}; finishCalibration(); return; }
+  updateCalibStep(); drawCalibPoints();
 }
 
 function updateCalibStep() {
-  const step = calibPoints.length < 4 ? calibPoints.length : 4;
-  const info = calibSteps[step];
-  document.getElementById('calib-step-title').textContent = info.title;
-  document.getElementById('calib-step-desc').textContent = info.desc;
-
-  // Päivitä pisteet
-  for (let i = 0; i < 4; i++) {
-    const dot = document.getElementById('cdot-' + i);
-    dot.className = 'calib-step-dot' + (i < calibPoints.length ? ' done' : i === calibPoints.length ? ' active' : '');
+  const i = calibPoints.length < 4 ? calibPoints.length : 4;
+  document.getElementById('calib-step-title').textContent = calibSteps[i].title;
+  document.getElementById('calib-step-desc').textContent = calibSteps[i].desc;
+  for (let j = 0; j < 4; j++) {
+    document.getElementById('cdot-'+j).className = 'calib-dot' + (j < calibPoints.length ? ' done' : j === calibPoints.length ? ' active' : '');
   }
-  const netDot = document.getElementById('cdot-net');
-  netDot.className = 'calib-step-dot' + (calibNetPoint ? ' done' : calibPoints.length === 4 ? ' active' : '');
+  document.getElementById('cdot-net').className = 'calib-dot' + (calibNetPoint ? ' done' : calibPoints.length === 4 ? ' active' : '');
 }
 
 function drawCalibPoints() {
-  const calibCanvas = document.getElementById('calib-canvas');
-  const ctx = calibCanvas.getContext('2d');
-  const W = calibCanvas.width, H = calibCanvas.height;
+  const cv = document.getElementById('calib-canvas');
+  const ctx = cv.getContext('2d');
+  const W = cv.width, H = cv.height;
   ctx.clearRect(0, 0, W, H);
-
-  // Kenttäalueen polygon
   if (calibPoints.length >= 2) {
-    ctx.beginPath();
-    ctx.moveTo(calibPoints[0].x * W, calibPoints[0].y * H);
-    for (let i = 1; i < calibPoints.length; i++) ctx.lineTo(calibPoints[i].x * W, calibPoints[i].y * H);
-    if (calibPoints.length === 4) { ctx.closePath(); ctx.fillStyle = 'rgba(0,184,255,0.07)'; ctx.fill(); }
-    ctx.strokeStyle = 'rgba(0,184,255,0.7)'; ctx.lineWidth = 2; ctx.setLineDash([5,3]); ctx.stroke(); ctx.setLineDash([]);
+    ctx.beginPath(); ctx.moveTo(calibPoints[0].x*W, calibPoints[0].y*H);
+    for (let i = 1; i < calibPoints.length; i++) ctx.lineTo(calibPoints[i].x*W, calibPoints[i].y*H);
+    if (calibPoints.length === 4) { ctx.closePath(); ctx.fillStyle='rgba(134,239,172,0.08)'; ctx.fill(); }
+    ctx.strokeStyle='rgba(134,239,172,0.7)'; ctx.lineWidth=2; ctx.setLineDash([5,3]); ctx.stroke(); ctx.setLineDash([]);
   }
-
-  // Kulmapisteet
-  const cornerLabels = ['TK-V','TK-O','ET-O','ET-V'];
+  const lbl = ['1','2','3','4'];
   calibPoints.forEach((p, i) => {
-    const cx = p.x * W, cy = p.y * H;
-    ctx.beginPath(); ctx.arc(cx, cy, 8, 0, Math.PI*2);
-    ctx.fillStyle = '#00e5a0'; ctx.fill();
-    ctx.fillStyle = '#000'; ctx.font = 'bold 9px monospace'; ctx.textAlign = 'center';
-    ctx.fillText(i+1, cx, cy+3.5);
-    ctx.fillStyle = 'rgba(0,229,160,0.9)'; ctx.font = '10px monospace';
-    ctx.fillText(cornerLabels[i], cx, cy-12);
+    const cx=p.x*W, cy=p.y*H;
+    ctx.beginPath(); ctx.arc(cx,cy,10,0,Math.PI*2); ctx.fillStyle='#4ade80'; ctx.fill();
+    ctx.fillStyle='#000'; ctx.font='bold 11px sans-serif'; ctx.textAlign='center'; ctx.fillText(lbl[i],cx,cy+4);
   });
-
-  // Verkon keskipiste
   if (calibNetPoint) {
-    const nx = calibNetPoint.x * W, ny = calibNetPoint.y * H;
-    ctx.beginPath(); ctx.arc(nx, ny, 8, 0, Math.PI*2);
-    ctx.fillStyle = '#ffc107'; ctx.fill();
-    ctx.fillStyle = '#000'; ctx.font = 'bold 8px monospace'; ctx.textAlign = 'center';
-    ctx.fillText('NET', nx, ny+3);
-    // Pystyviiva verkon läpi
-    if (calibPoints.length === 4) {
-      ctx.strokeStyle = 'rgba(255,193,7,0.6)'; ctx.lineWidth = 2; ctx.setLineDash([6,4]);
-      ctx.beginPath(); ctx.moveTo(nx, 0); ctx.lineTo(nx, H); ctx.stroke(); ctx.setLineDash([]);
-    }
+    const nx=calibNetPoint.x*W, ny=calibNetPoint.y*H;
+    ctx.beginPath(); ctx.arc(nx,ny,10,0,Math.PI*2); ctx.fillStyle='#fbbf24'; ctx.fill();
+    ctx.fillStyle='#000'; ctx.font='bold 8px sans-serif'; ctx.textAlign='center'; ctx.fillText('NET',nx,ny+3);
+    ctx.strokeStyle='rgba(251,191,36,0.5)'; ctx.lineWidth=2; ctx.setLineDash([6,4]);
+    ctx.beginPath(); ctx.moveTo(nx,0); ctx.lineTo(nx,H); ctx.stroke(); ctx.setLineDash([]);
   }
-
-  // Seuraavan pisteen ohje
   if (calibPoints.length < 4) {
-    ctx.fillStyle = 'rgba(0,184,255,0.7)'; ctx.font = '12px monospace'; ctx.textAlign = 'center';
-    ctx.fillText('Napauta: ' + ['vasen takakulma','oikea takakulma','oikea etukulma','vasen etukulma'][calibPoints.length], W/2, H-12);
+    ctx.fillStyle='rgba(134,239,172,0.8)'; ctx.font='13px sans-serif'; ctx.textAlign='center';
+    ctx.fillText(['Napauta vasen takakulma','Napauta oikea takakulma','Napauta oikea etukulma','Napauta vasen etukulma'][calibPoints.length], W/2, H-12);
   } else if (!calibNetPoint) {
-    ctx.fillStyle = 'rgba(255,193,7,0.8)'; ctx.font = '12px monospace'; ctx.textAlign = 'center';
-    ctx.fillText('Napauta: verkon keskipiste', W/2, H-12);
+    ctx.fillStyle='rgba(251,191,36,0.9)'; ctx.font='13px sans-serif'; ctx.textAlign='center';
+    ctx.fillText('Napauta verkon keskipiste', W/2, H-12);
   }
 }
 
 function undoCalibPoint() {
-  if (calibNetPoint) { calibNetPoint = null; }
-  else if (calibPoints.length > 0) { calibPoints.pop(); }
-  updateCalibStep();
-  drawCalibPoints();
+  if (calibNetPoint) calibNetPoint = null;
+  else if (calibPoints.length > 0) calibPoints.pop();
+  updateCalibStep(); drawCalibPoints();
 }
 
 function stopCalibCamera() {
-  if (calibStream) { calibStream.getTracks().forEach(t => t.stop()); calibStream = null; }
-  const v = document.getElementById('calib-video');
-  v.srcObject = null; v.src = '';
+  if (calibStream) { calibStream.getTracks().forEach(t=>t.stop()); calibStream=null; }
+  const cv = document.getElementById('calib-video'); cv.srcObject=null; cv.src='';
 }
 
 function finishCalibration() {
   stopCalibCamera();
-  saveCourtProfile(calibPoints, calibNetPoint);
-
-  document.getElementById('screen-calib').style.display = 'none';
-  document.getElementById('screen-select').style.display = 'flex';
-  document.getElementById('screen-select').style.flexDirection = 'column';
-
-  // Näytä onnistumisviesti
+  saveProfile(calibPoints, calibNetPoint);
+  showScreen('screen-select');
   document.getElementById('profile-badge').style.display = 'flex';
-  document.getElementById('profile-sub').textContent = 'Kalibroitu juuri nyt — ei tarvita uudelleen';
+  document.getElementById('profile-sub').textContent = 'Juuri kalibroitu — valmis pelaamaan! 🎉';
   document.getElementById('start-btn').style.display = 'block';
   document.getElementById('start-btn').disabled = false;
   document.getElementById('calib-btn').style.display = 'none';
-  document.getElementById('select-info').innerHTML =
-    '<strong style="color:var(--green)">Kenttä kalibroitu!</strong><br>' +
-    'Nyt voit aloittaa pelaamisen. Haastotilanteessa tarvitsee merkitä vain pallon pomppupiste.';
+  document.getElementById('select-info').innerHTML = '🎉 <strong style="color:var(--in)">Kenttä kalibroitu!</strong> Nyt voit aloittaa pelaamisen.';
 }
 
-// === VAIHE 2: KUVAUS ===
+// === KUVAUS ===
 async function startRecording() {
-  const labels = ['CAM 1 — Vasen takakulma','CAM 2 — Oikea takakulma','CAM 3 — Vasen etukulma','CAM 4 — Oikea etukulma'];
-  document.getElementById('cam-label-overlay').textContent = labels[selectedCam];
-  document.getElementById('screen-select').style.display = 'none';
-  document.getElementById('screen-recording').style.display = 'flex';
-  document.getElementById('screen-recording').style.flexDirection = 'column';
-  document.getElementById('header-status').textContent = 'REC';
-  document.getElementById('header-status').style.color = 'var(--out)';
-  setStep(2);
+  document.getElementById('cam-label-overlay').textContent = 'Tuomarintorni';
+  showScreen('screen-recording');
+  setHeaderRec(true);
 
   try {
     mediaStream = await navigator.mediaDevices.getUserMedia({
@@ -712,268 +779,216 @@ async function startRecording() {
       audio: true
     });
     document.getElementById('camera-feed').srcObject = mediaStream;
+    document.getElementById('camera-feed').style.display = 'block';
+    document.getElementById('no-camera-msg').style.display = 'none';
     startBuffer();
-    startVoiceRecognition();
-  } catch(err) {
+    startVoice();
+  } catch(e) {
     document.getElementById('camera-feed').style.display = 'none';
-    document.getElementById('no-camera-msg').style.display = 'block';
-    startFallbackBuffer();
+    document.getElementById('no-camera-msg').style.display = 'flex';
+    startFallbackTimer();
   }
 }
 
 function startBuffer() {
-  recordedChunks = []; bufferSeconds = 0;
-  let opts = {};
+  recordedChunks = []; bufferSec = 0;
   const types = ['video/webm;codecs=vp9,opus','video/webm;codecs=vp8,opus','video/webm','video/mp4'];
+  let opts = {};
   for (const t of types) { if (MediaRecorder.isTypeSupported(t)) { opts = { mimeType: t }; break; } }
   try { mediaRecorder = new MediaRecorder(mediaStream, opts); } catch(e) { mediaRecorder = new MediaRecorder(mediaStream); }
-
   mediaRecorder.ondataavailable = e => {
     if (e.data && e.data.size > 0) {
       recordedChunks.push({ data: e.data, time: Date.now() });
-      const cutoff = Date.now() - (BUFFER_SECONDS + 10) * 1000;
-      recordedChunks = recordedChunks.filter(c => c.time > cutoff);
+      const cut = Date.now() - (BUFFER_SEC + 10) * 1000;
+      recordedChunks = recordedChunks.filter(c => c.time > cut);
     }
   };
   mediaRecorder.start(2000);
-  bufferInterval = setInterval(() => {
-    bufferSeconds = Math.min(bufferSeconds + 1, BUFFER_SECONDS);
-    const b = document.getElementById('buffer-badge');
-    if (b) b.textContent = `Puskuri: ${bufferSeconds}s`;
-  }, 1000);
+  startFallbackTimer();
 }
 
-function startFallbackBuffer() {
-  bufferSeconds = 0;
-  bufferInterval = setInterval(() => {
-    bufferSeconds = Math.min(bufferSeconds + 1, BUFFER_SECONDS);
+function startFallbackTimer() {
+  bufferSec = 0;
+  bufferTimer = setInterval(() => {
+    bufferSec = Math.min(bufferSec + 1, BUFFER_SEC);
     const b = document.getElementById('buffer-badge');
-    if (b) b.textContent = `Puskuri: ${bufferSeconds}s`;
+    if (b) b.textContent = `Puskuri: ${bufferSec}s`;
   }, 1000);
 }
 
 // === ÄÄNITUNNISTUS ===
-let speechRecognition = null;
-let haastoMarks = []; // [{time, bufferOffset}]
-
-function startVoiceRecognition() {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    document.getElementById('voice-label').textContent = 'ÄÄNITUNNISTUS EI TUETTU — KÄYTÄ NAPPIA';
+function startVoice() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    setVoiceStatus('muted', 'Käytä nappia');
     return;
   }
+  speechRec = new SR();
+  speechRec.lang = 'fi-FI';
+  speechRec.continuous = true;
+  speechRec.interimResults = false;
+  speechRec.maxAlternatives = 3;
 
-  speechRecognition = new SpeechRecognition();
-  speechRecognition.lang = 'fi-FI';
-  speechRecognition.continuous = true;
-  speechRecognition.interimResults = false;
-  speechRecognition.maxAlternatives = 3;
+  speechRec.onstart = () => setVoiceStatus('active', 'Kuuntelee...');
 
-  speechRecognition.onstart = () => {
-    document.getElementById('voice-dot').style.background = '#00e5a0';
-    document.getElementById('voice-label').textContent = 'KUUNTELEE — HUUDA "HAASTO"';
-    document.getElementById('voice-label').style.color = '#00e5a0';
-  };
-
-  speechRecognition.onresult = e => {
+  speechRec.onresult = e => {
     for (let i = e.resultIndex; i < e.results.length; i++) {
-      const transcript = e.results[i][0].transcript.toLowerCase().trim();
-      // Tunnistaa "haasto" ja sen läheiset variantit
-      if (transcript.includes('haasto') || transcript.includes('hasto') ||
-          transcript.includes('haasta') || transcript.includes('challenge')) {
-        markHaastoMoment();
+      const t = e.results[i][0].transcript.toLowerCase();
+      if (t.includes('haasto') || t.includes('hasto') || t.includes('haasta') || t.includes('challenge')) {
+        markMoment();
       }
     }
   };
 
-  speechRecognition.onerror = e => {
-    if (e.error === 'not-allowed') {
-      document.getElementById('voice-label').textContent = 'MIKROFONI EI SALLITTU — KÄYTÄ NAPPIA';
-    } else if (e.error !== 'no-speech') {
-      // Käynnistä uudelleen virheen jälkeen
-      setTimeout(() => { if (speechRecognition) speechRecognition.start(); }, 1000);
-    }
+  speechRec.onerror = e => {
+    if (e.error === 'not-allowed') setVoiceStatus('muted', 'Ei lupaa — käytä nappia');
+    else if (e.error !== 'no-speech') setTimeout(() => { try { speechRec.start(); } catch(err){} }, 1000);
   };
 
-  speechRecognition.onend = () => {
-    // Käynnistä automaattisesti uudelleen jotta kuuntelu on jatkuvaa
-    if (speechRecognition) {
-      setTimeout(() => {
-        try { speechRecognition.start(); } catch(e) {}
-      }, 300);
-    }
+  speechRec.onend = () => {
+    if (speechRec) setTimeout(() => { try { speechRec.start(); } catch(err){} }, 300);
   };
 
-  try { speechRecognition.start(); } catch(e) {}
+  try { speechRec.start(); } catch(e) {}
 }
 
-function stopVoiceRecognition() {
-  if (speechRecognition) {
-    speechRecognition.onend = null;
-    try { speechRecognition.stop(); } catch(e) {}
-    speechRecognition = null;
-  }
-  document.getElementById('voice-dot').style.background = 'var(--muted)';
-  document.getElementById('voice-label').textContent = 'ÄÄNITUNNISTUS PYSÄYTETTY';
-  document.getElementById('voice-label').style.color = 'var(--muted)';
+function stopVoice() {
+  if (speechRec) { speechRec.onend = null; try { speechRec.stop(); } catch(e){} speechRec = null; }
+  setVoiceStatus('muted', 'Pysäytetty');
 }
 
-function markHaastoMoment() {
-  const now = Date.now();
-  const mark = {
-    time: now,
-    bufferOffset: bufferSeconds,
-    label: new Date(now).toLocaleTimeString('fi-FI')
-  };
+function setVoiceStatus(state, txt) {
+  const dot = document.getElementById('voice-dot');
+  const lbl = document.getElementById('voice-label');
+  const hud = document.getElementById('voice-hud');
+  if (state === 'active') { dot.style.background='#4ade80'; lbl.style.color='#4ade80'; hud.style.color='#4ade80'; }
+  else if (state === 'triggered') { dot.style.background='#ef4444'; lbl.style.color='#ef4444'; hud.style.color='#ef4444'; }
+  else { dot.style.background='var(--muted)'; lbl.style.color='var(--muted)'; hud.style.color='var(--muted)'; }
+  lbl.textContent = txt;
+}
+
+function markMoment() {
+  const mark = { time: Date.now(), label: new Date().toLocaleTimeString('fi-FI') };
   haastoMarks.push(mark);
 
-  // Visuaalinen välähdys
-  const flash = document.getElementById('voice-flash');
-  flash.style.display = 'block';
-  setTimeout(() => flash.style.display = 'none', 400);
+  // Välähdys
+  const fl = document.getElementById('voice-flash-overlay');
+  fl.style.display = 'block';
+  setTimeout(() => fl.style.display = 'none', 350);
 
-  // Päivitä merkkilista
+  setVoiceStatus('triggered', `Merkitty ${mark.label}`);
+  setTimeout(() => setVoiceStatus('active', 'Kuuntelee...'), 2500);
+
   updateMarksList();
-
-  // Ääni-feedback
-  document.getElementById('voice-label').textContent = `HAASTO MERKITTY — ${mark.label}`;
-  document.getElementById('voice-dot').style.background = '#ff1744';
-  setTimeout(() => {
-    document.getElementById('voice-dot').style.background = '#00e5a0';
-    document.getElementById('voice-label').textContent = 'KUUNTELEE — HUUDA "HAASTO"';
-  }, 2000);
 }
 
 function updateMarksList() {
-  const section = document.getElementById('marks-section');
+  const wrap = document.getElementById('marks-wrap');
   const list = document.getElementById('marks-list');
-  if (haastoMarks.length === 0) { section.style.display = 'none'; return; }
-  section.style.display = 'flex';
+  if (!haastoMarks.length) { wrap.style.display = 'none'; return; }
+  wrap.style.display = 'block';
   list.innerHTML = haastoMarks.map((m, i) => `
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;background:rgba(255,23,68,0.08);border:1px solid rgba(255,23,68,0.2);border-radius:4px;">
-      <span style="font-family:Share Tech Mono,monospace;font-size:11px;color:var(--out)">HAASTO ${i+1} — ${m.label}</span>
-      <button onclick="openMarkAtIndex(${i})" style="padding:4px 10px;background:var(--out);color:#000;border:none;border-radius:3px;font-family:Orbitron,monospace;font-size:9px;font-weight:700;cursor:pointer;letter-spacing:1px;">KATSO</button>
+    <div class="mark-item">
+      <div>
+        <div class="mark-time">⚡ Haasto ${i+1}</div>
+        <div class="mark-label">${m.label}</div>
+      </div>
+      <button class="mark-open-btn" onclick="openMark(${i})">Katso</button>
     </div>
   `).join('');
 }
 
-function openMarkAtIndex(index) {
-  const mark = haastoMarks[index];
-  if (!mark) return;
-  // Laske missä kohdassa videossa tämä hetki on
-  // bufferOffset kertoo kuinka monta sekuntia ennen haastoa tämä tapahtui
-  const secondsAgo = (Date.now() - mark.time) / 1000;
-  pendingSeekSeconds = secondsAgo; // tallennetaan muuttujaan, käytetään kun video avataan
+function openMark(i) {
+  const mark = haastoMarks[i];
+  pendingSeekSec = (Date.now() - mark.time) / 1000;
   pressHaasto();
 }
-
-let pendingSeekSeconds = 0;
 
 // === HAASTO ===
 function pressHaasto() {
   const btn = document.getElementById('haasto-btn');
   btn.classList.add('pressed');
-  btn.textContent = '⚡ TALLENNETTU';
-  clearInterval(bufferInterval);
-  stopVoiceRecognition();
+  btn.textContent = '✓ Tallennettu!';
+  clearInterval(bufferTimer);
+  stopVoice();
   if (mediaRecorder && mediaRecorder.state !== 'inactive') mediaRecorder.stop();
   if (mediaStream) mediaStream.getTracks().forEach(t => t.stop());
-  document.getElementById('header-status').textContent = 'ANALYYSI';
-  document.getElementById('header-status').style.color = 'var(--gold)';
-  setTimeout(buildCapturedVideo, 600);
+  setHeaderRec(false);
+  setTimeout(buildVideo, 600);
 }
 
-function buildCapturedVideo() {
-  if (recordedChunks.length === 0) { showManualUpload(); return; }
-  const allData = recordedChunks.map(c => c.data);
-  const mimeType = recordedChunks[0].data.type || 'video/webm';
-  capturedBlob = new Blob(allData, { type: mimeType });
+function buildVideo() {
+  if (!recordedChunks.length) { showManualUpload(); return; }
+  const mime = recordedChunks[0].data.type || 'video/webm';
+  capturedBlob = new Blob(recordedChunks.map(c => c.data), { type: mime });
   openAnalysis(capturedBlob);
 }
 
 function showManualUpload() {
-  document.getElementById('screen-recording').style.display = 'none';
-  document.getElementById('screen-analysis').style.display = 'flex';
-  document.getElementById('screen-analysis').style.flexDirection = 'column';
-  document.getElementById('instructions').innerHTML =
-    '<strong>Lataa video manuaalisesti</strong><br>' +
-    '<button onclick="document.getElementById(\'manual-upload\').click()" style="margin-top:8px;padding:8px 14px;background:var(--accent);color:#000;border:none;border-radius:3px;font-family:Orbitron,monospace;font-size:10px;font-weight:600;cursor:pointer;letter-spacing:1px">LATAA VIDEO</button>';
-  setStep(3);
+  showScreen('screen-analysis');
+  document.getElementById('instructions').innerHTML = `
+    <div>📁 Lataa video käsin</div>
+    <span><button onclick="document.getElementById('manual-upload').click()" style="margin-top:8px;padding:8px 16px;background:var(--accent);color:#0d1f0d;border:none;border-radius:10px;font-family:Nunito,sans-serif;font-size:14px;font-weight:800;cursor:pointer;">Valitse video</button></span>`;
 }
 
 document.getElementById('manual-upload').addEventListener('change', e => {
-  const f = e.target.files[0];
-  if (f) openAnalysis(f);
+  const f = e.target.files[0]; if (f) openAnalysis(f);
 });
 
-function openAnalysis(source) {
-  document.getElementById('screen-recording').style.display = 'none';
-  document.getElementById('screen-calib').style.display = 'none';
-  document.getElementById('screen-analysis').style.display = 'flex';
-  document.getElementById('screen-analysis').style.flexDirection = 'column';
-  setStep(3);
+function openAnalysis(src) {
+  showScreen('screen-analysis');
   ballPoint = null;
   document.getElementById('action-btn').disabled = true;
+  document.getElementById('screen-calib').style.display = 'none';
 
-  const url = URL.createObjectURL(source instanceof Blob ? source : source);
-  vid.src = url;
-  vid.load();
+  const url = URL.createObjectURL(src instanceof Blob ? src : src);
+  vid.src = url; vid.load();
   vid.onloadedmetadata = () => {
     document.getElementById('scrubber').max = vid.duration;
-    updateTimeLabel();
-    resizeCanvases();
-    // Hyppää oikeaan kohtaan — joko merkittyyn hetkeen tai lähelle loppua
-    if (pendingSeekSeconds > 0 && pendingSeekSeconds < vid.duration) {
-      vid.currentTime = Math.max(0, vid.duration - pendingSeekSeconds - 3);
-      pendingSeekSeconds = 0;
-    } else {
-      vid.currentTime = Math.max(0, vid.duration - 5);
-    }
-    analyzeAudioForTimeline(source);
-    document.getElementById('instructions').innerHTML =
-      '<strong>Merkitse pomppupiste</strong><br>' +
-      'Etsi aikajanalta lyöntihetki ja pysäytä video siihen.<br>' +
-      'Napauta kohtaa jossa pallo osui maahan.';
+    updateTime(); resizeCanvases();
+    vid.currentTime = pendingSeekSec > 0 && pendingSeekSec < vid.duration
+      ? Math.max(0, vid.duration - pendingSeekSec - 3)
+      : Math.max(0, vid.duration - 5);
+    pendingSeekSec = 0;
+    analyzeAudio(src);
+    document.getElementById('instructions').innerHTML = '<div>👆 Napauta pallon pomppupiste</div><span>Pysäytä video oikeaan kohtaan, sitten napauta mihin pallo osui</span>';
   };
 }
 
 // === AIKAJANA ===
-async function analyzeAudioForTimeline(source) {
+async function analyzeAudio(src) {
   try {
-    const ab = source instanceof Blob ? await source.arrayBuffer() : await new Response(source).arrayBuffer();
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const buf = await ctx.decodeAudioData(ab.slice(0));
+    const ab = src instanceof Blob ? await src.arrayBuffer() : await new Response(src).arrayBuffer();
+    const ctx2 = new (window.AudioContext || window.webkitAudioContext)();
+    const buf = await ctx2.decodeAudioData(ab.slice(0));
     const data = buf.getChannelData(0);
-    const buckets = 120;
-    const bSize = Math.floor(data.length / buckets);
+    const B = 120, bsz = Math.floor(data.length / B);
     audioData = [];
-    for (let i = 0; i < buckets; i++) {
-      let s = 0;
-      for (let j = 0; j < bSize; j++) s += Math.abs(data[i*bSize+j]||0);
-      audioData.push(s/bSize);
+    for (let i = 0; i < B; i++) {
+      let s = 0; for (let j = 0; j < bsz; j++) s += Math.abs(data[i*bsz+j]||0);
+      audioData.push(s/bsz);
     }
-    await ctx.close();
-    drawTimeline();
+    await ctx2.close(); drawTimeline();
   } catch(e) { audioData = new Array(120).fill(0.01); drawTimeline(); }
 }
 
 function drawTimeline(hl) {
   const W = tlCanvas.offsetWidth || 300;
-  tlCanvas.width = W; tlCanvas.height = 60;
-  tlCtx.clearRect(0, 0, W, 60);
+  tlCanvas.width = W; tlCanvas.height = 56;
+  tlCtx.clearRect(0, 0, W, 56);
   if (!audioData.length) return;
   const max = Math.max(...audioData) || 1;
   const bw = W / audioData.length;
   audioData.forEach((v, i) => {
-    const h = Math.max(2, (v/max)*52);
+    const h = Math.max(2, (v/max)*50);
     const isHl = hl !== undefined && Math.abs(i-hl) < 2;
-    tlCtx.fillStyle = isHl ? '#ffc107' : (v/max > 0.5 ? '#00b8ff' : 'rgba(0,184,255,0.35)');
-    tlCtx.fillRect(i*bw+0.5, 60-h, Math.max(1,bw-1), h);
+    tlCtx.fillStyle = isHl ? '#fbbf24' : (v/max > 0.5 ? '#86efac' : 'rgba(134,239,172,0.25)');
+    tlCtx.fillRect(i*bw+0.5, 56-h, Math.max(1,bw-1), h);
   });
   if (vid.duration) {
     const pos = (vid.currentTime/vid.duration)*W;
-    tlCtx.strokeStyle='#ffc107'; tlCtx.lineWidth=2;
-    tlCtx.beginPath(); tlCtx.moveTo(pos,0); tlCtx.lineTo(pos,60); tlCtx.stroke();
+    tlCtx.strokeStyle='#fbbf24'; tlCtx.lineWidth=2;
+    tlCtx.beginPath(); tlCtx.moveTo(pos,0); tlCtx.lineTo(pos,56); tlCtx.stroke();
   }
 }
 
@@ -981,7 +996,7 @@ tlCanvas.addEventListener('click', e => {
   if (!vid.duration) return;
   const r = tlCanvas.getBoundingClientRect();
   const ratio = (e.clientX-r.left)/r.width;
-  vid.currentTime = ratio * vid.duration;
+  vid.currentTime = ratio*vid.duration;
   drawTimeline(Math.floor(ratio*audioData.length));
 });
 tlCanvas.addEventListener('touchend', e => {
@@ -989,14 +1004,13 @@ tlCanvas.addEventListener('touchend', e => {
   const t = e.changedTouches[0];
   const r = tlCanvas.getBoundingClientRect();
   const ratio = Math.max(0,Math.min(1,(t.clientX-r.left)/r.width));
-  vid.currentTime = ratio * vid.duration;
+  vid.currentTime = ratio*vid.duration;
   drawTimeline(Math.floor(ratio*audioData.length));
 });
 
 // === VIDEO ===
 function resizeCanvases() {
-  const r = vid.getBoundingClientRect();
-  if (!r.width) return;
+  const r = vid.getBoundingClientRect(); if (!r.width) return;
   courtCanvas.width = clickCanvas.width = r.width;
   courtCanvas.height = clickCanvas.height = r.height;
   drawAll();
@@ -1010,39 +1024,34 @@ function togglePlay() {
 }
 vid.addEventListener('timeupdate', () => {
   document.getElementById('scrubber').value = vid.currentTime;
-  updateTimeLabel(); drawAll(); drawTimeline();
+  updateTime(); drawAll(); drawTimeline();
 });
 vid.addEventListener('pause', () => document.getElementById('play-btn').textContent='▶');
 document.getElementById('scrubber').addEventListener('input', e => { vid.currentTime=parseFloat(e.target.value); });
 
-function updateTimeLabel() {
-  const fmt = t => `${Math.floor(t/60).toString().padStart(2,'0')}:${(t%60).toFixed(2).padStart(5,'0')}`;
-  document.getElementById('time-label').textContent = `${fmt(vid.currentTime)} / ${fmt(vid.duration||0)}`;
-}
-function stepFrame(dir) {
-  vid.pause();
-  vid.currentTime = Math.max(0, Math.min(vid.duration, vid.currentTime+dir/30));
+function updateTime() {
+  const fmt = t => `${Math.floor(t/60)}:${(t%60).toFixed(1).padStart(4,'0')}`;
+  document.getElementById('time-label').textContent = `${fmt(vid.currentTime)}`;
 }
 
-// === PALLO MERKINTÄ ===
-clickCanvas.addEventListener('click', handleClick);
+function stepFrame(dir) {
+  vid.pause(); vid.currentTime = Math.max(0, Math.min(vid.duration, vid.currentTime+dir/30));
+}
+
+// === PALLO ===
+clickCanvas.addEventListener('click', handleBallClick);
 clickCanvas.addEventListener('touchend', e => {
   e.preventDefault();
   const t = e.changedTouches[0];
-  const r = clickCanvas.getBoundingClientRect();
-  handleClick({ clientX:t.clientX, clientY:t.clientY, _rect:r });
+  handleBallClick({ clientX:t.clientX, clientY:t.clientY, _rect:clickCanvas.getBoundingClientRect() });
 });
 
-function handleClick(e) {
+function handleBallClick(e) {
   vid.pause();
   const r = e._rect || clickCanvas.getBoundingClientRect();
-  const x = (e.clientX-r.left)/r.width;
-  const y = (e.clientY-r.top)/r.height;
-  ballPoint = {x, y};
+  ballPoint = { x:(e.clientX-r.left)/r.width, y:(e.clientY-r.top)/r.height };
   document.getElementById('action-btn').disabled = false;
-  document.getElementById('instructions').innerHTML =
-    '<strong>Pomppupiste merkitty!</strong><br>' +
-    'Paina <span style="color:var(--accent)">Laske tulos</span> tai napauta uudelleen korjataksesi sijaintia.';
+  document.getElementById('instructions').innerHTML = '<div>✅ Pomppupiste merkitty!</div><span>Paina "Laske tulos" tai napauta uudelleen korjataksesi</span>';
   drawAll();
 }
 
@@ -1051,296 +1060,206 @@ function drawAll() {
   if (!courtCanvas.width) return;
   cc.clearRect(0,0,courtCanvas.width,courtCanvas.height);
   const W=courtCanvas.width, H=courtCanvas.height;
-  const C = p => ({x:p.x*W,y:p.y*H});
+  const C = p => ({x:p.x*W, y:p.y*H});
 
-  // Piirrä kenttäprofiili jos tallennettu
-  if (courtProfile && courtProfile.points.length === 4) {
+  if (courtProfile?.points?.length === 4) {
     const pts = courtProfile.points;
-    cc.beginPath();
-    cc.moveTo(pts[0].x*W, pts[0].y*H);
-    for (let i=1;i<4;i++) cc.lineTo(pts[i].x*W, pts[i].y*H);
-    cc.closePath();
-    cc.fillStyle='rgba(0,184,255,0.04)';
-    cc.fill();
-    cc.strokeStyle='rgba(0,184,255,0.5)';
-    cc.lineWidth=1.5; cc.setLineDash([4,3]); cc.stroke(); cc.setLineDash([]);
-
-    // Verkon keskiviiva
+    cc.beginPath(); cc.moveTo(pts[0].x*W,pts[0].y*H);
+    for (let i=1;i<4;i++) cc.lineTo(pts[i].x*W,pts[i].y*H);
+    cc.closePath(); cc.fillStyle='rgba(134,239,172,0.04)'; cc.fill();
+    cc.strokeStyle='rgba(134,239,172,0.45)'; cc.lineWidth=1.5; cc.setLineDash([4,3]); cc.stroke(); cc.setLineDash([]);
     if (courtProfile.netPoint) {
-      const nx = courtProfile.netPoint.x*W;
-      cc.strokeStyle='rgba(255,193,7,0.4)';
-      cc.lineWidth=1; cc.setLineDash([5,4]);
+      const nx=courtProfile.netPoint.x*W;
+      cc.strokeStyle='rgba(251,191,36,0.35)'; cc.lineWidth=1; cc.setLineDash([5,4]);
       cc.beginPath(); cc.moveTo(nx,0); cc.lineTo(nx,H); cc.stroke(); cc.setLineDash([]);
     }
   }
 
-  // Pallo
   if (ballPoint) {
     const b=C(ballPoint);
-    cc.beginPath(); cc.arc(b.x+2,b.y+2,10,0,Math.PI*2); cc.fillStyle='rgba(0,0,0,0.4)'; cc.fill();
-    cc.beginPath(); cc.arc(b.x,b.y,10,0,Math.PI*2); cc.fillStyle='#ffc107'; cc.fill();
-    cc.strokeStyle='#000'; cc.lineWidth=2; cc.stroke();
+    cc.beginPath(); cc.arc(b.x+2,b.y+2,11,0,Math.PI*2); cc.fillStyle='rgba(0,0,0,0.35)'; cc.fill();
+    cc.beginPath(); cc.arc(b.x,b.y,11,0,Math.PI*2); cc.fillStyle='#fbbf24'; cc.fill();
+    cc.strokeStyle='#000'; cc.lineWidth=2.5; cc.stroke();
+    cc.strokeStyle='#000'; cc.lineWidth=2;
     cc.beginPath(); cc.moveTo(b.x-5,b.y-5); cc.lineTo(b.x+5,b.y+5); cc.moveTo(b.x+5,b.y-5); cc.lineTo(b.x-5,b.y+5); cc.stroke();
-  }
-
-  if (!ballPoint) {
-    cc.fillStyle='rgba(255,193,7,0.6)'; cc.font='12px monospace'; cc.textAlign='center';
-    cc.fillText('Napauta pallon pomppupiste', W/2, H-12);
+  } else {
+    cc.fillStyle='rgba(251,191,36,0.7)'; cc.font='13px Nunito'; cc.textAlign='center'; cc.fontWeight='700';
+    cc.fillText('👆 Napauta pallon pomppupiste', W/2, H-14);
   }
 }
 
 // === PERSPEKTIIVIKORJAUS ===
-// Tenniskentän oikeat mitat metreinä (nelinpeli)
-// Leveys: 10.97m, Pituus: 23.77m
-const COURT_W = 10.97; // metriä
-const COURT_H = 23.77; // metriä
-
-// Laske homografia-matriisi 4 pisteestä
-// Muuntaa kuvakoordinaatit (pikselit 0-1) kentän koordinaateiksi (metrit)
-function computeHomography(srcPts) {
-  // srcPts: 4 pistettä kuvassa normalisoituna [0,1]
-  // järjestys: vasen taka, oikea taka, oikea etu, vasen etu
-  // dstPts: vastaavat kentän koordinaatit metreinä
-  const dst = [
-    {x: 0,        y: 0},
-    {x: COURT_W,  y: 0},
-    {x: COURT_W,  y: COURT_H},
-    {x: 0,        y: COURT_H}
-  ];
-
-  // Rakennetaan 8x8 lineaarinen yhtälösysteemi homografialle
-  const A = [];
-  const b = [];
-  for (let i = 0; i < 4; i++) {
-    const sx = srcPts[i].x, sy = srcPts[i].y;
-    const dx = dst[i].x,   dy = dst[i].y;
-    A.push([sx, sy, 1, 0, 0, 0, -dx*sx, -dx*sy]);
-    A.push([0, 0, 0, sx, sy, 1, -dy*sx, -dy*sy]);
-    b.push(dx);
-    b.push(dy);
+function computeH(src) {
+  const dst=[{x:0,y:0},{x:COURT_W,y:0},{x:COURT_W,y:COURT_H},{x:0,y:COURT_H}];
+  const A=[], b=[];
+  for (let i=0;i<4;i++) {
+    const {x:sx,y:sy}=src[i], {x:dx,y:dy}=dst[i];
+    A.push([sx,sy,1,0,0,0,-dx*sx,-dx*sy]); b.push(dx);
+    A.push([0,0,0,sx,sy,1,-dy*sx,-dy*sy]); b.push(dy);
   }
-
-  // Ratkaistaan Gaussin eliminoinnilla
-  const h = gaussSolve(A, b);
-  if (!h) return null;
-
-  // Palauta 3x3 matriisi
-  return [h[0],h[1],h[2], h[3],h[4],h[5], h[6],h[7],1];
+  const h=gaussSolve(A,b); if (!h) return null;
+  return [h[0],h[1],h[2],h[3],h[4],h[5],h[6],h[7],1];
 }
 
-function gaussSolve(A, b) {
-  const n = 8;
-  const M = A.map((row, i) => [...row, b[i]]);
-  for (let col = 0; col < n; col++) {
-    let maxRow = col;
-    for (let row = col+1; row < n; row++) {
-      if (Math.abs(M[row][col]) > Math.abs(M[maxRow][col])) maxRow = row;
-    }
-    [M[col], M[maxRow]] = [M[maxRow], M[col]];
-    if (Math.abs(M[col][col]) < 1e-10) return null;
-    for (let row = col+1; row < n; row++) {
-      const f = M[row][col] / M[col][col];
-      for (let j = col; j <= n; j++) M[row][j] -= f * M[col][j];
-    }
+function gaussSolve(A,b) {
+  const n=8, M=A.map((r,i)=>[...r,b[i]]);
+  for (let c=0;c<n;c++) {
+    let mx=c; for (let r=c+1;r<n;r++) if (Math.abs(M[r][c])>Math.abs(M[mx][c])) mx=r;
+    [M[c],M[mx]]=[M[mx],M[c]];
+    if (Math.abs(M[c][c])<1e-10) return null;
+    for (let r=c+1;r<n;r++) { const f=M[r][c]/M[c][c]; for (let j=c;j<=n;j++) M[r][j]-=f*M[c][j]; }
   }
-  const x = new Array(n).fill(0);
-  for (let i = n-1; i >= 0; i--) {
-    x[i] = M[i][n] / M[i][i];
-    for (let j = i-1; j >= 0; j--) M[j][n] -= M[j][i] * x[i];
-  }
+  const x=new Array(n).fill(0);
+  for (let i=n-1;i>=0;i--) { x[i]=M[i][n]/M[i][i]; for (let j=i-1;j>=0;j--) M[j][n]-=M[j][i]*x[i]; }
   return x;
 }
 
-// Muunna kuvakoordinaatti (0-1) kentän koordinaatiksi (metrit)
-function imageToCourtMeters(pt, H) {
-  if (!H) return null;
-  const x = pt.x, y = pt.y;
-  const w = H[6]*x + H[7]*y + H[8];
-  return {
-    x: (H[0]*x + H[1]*y + H[2]) / w,
-    y: (H[3]*x + H[4]*y + H[5]) / w
-  };
+function imgToMeters(pt, H) {
+  const w=H[6]*pt.x+H[7]*pt.y+H[8];
+  return { x:(H[0]*pt.x+H[1]*pt.y+H[2])/w, y:(H[3]*pt.x+H[4]*pt.y+H[5])/w };
 }
 
-// Laske etäisyys pisteestä lähimpään kentän viivaan metreinä
-function distToCourtLinesMeters(courtPt) {
-  // Kentän reunaviivat koordinaateissa (0,0)-(COURT_W, COURT_H)
-  const x = courtPt.x, y = courtPt.y;
-  const lines = [
-    {a:{x:0,y:0}, b:{x:COURT_W,y:0}},        // takaviiva
-    {a:{x:COURT_W,y:0}, b:{x:COURT_W,y:COURT_H}}, // oikea sivu
-    {a:{x:COURT_W,y:COURT_H}, b:{x:0,y:COURT_H}}, // etuviiva
-    {a:{x:0,y:COURT_H}, b:{x:0,y:0}},         // vasen sivu
+function distToLines(p) {
+  const lines=[
+    [{x:0,y:0},{x:COURT_W,y:0}],
+    [{x:COURT_W,y:0},{x:COURT_W,y:COURT_H}],
+    [{x:COURT_W,y:COURT_H},{x:0,y:COURT_H}],
+    [{x:0,y:COURT_H},{x:0,y:0}],
   ];
-  let minDist = Infinity;
-  for (const l of lines) {
-    const d = ptSegDist2D({x,y}, l.a, l.b);
-    if (d < minDist) minDist = d;
-  }
-  return minDist;
+  return Math.min(...lines.map(([a,b])=>ptSeg2(p,a,b)));
 }
 
-function ptSegDist2D(p, a, b) {
-  const dx=b.x-a.x, dy=b.y-a.y, len=dx*dx+dy*dy;
-  let t = len>0 ? ((p.x-a.x)*dx+(p.y-a.y)*dy)/len : 0;
-  t = Math.max(0, Math.min(1, t));
-  return Math.sqrt((p.x-a.x-t*dx)**2 + (p.y-a.y-t*dy)**2);
-}
-
-// Onko piste kentän sisällä (metrikoordinaateissa)?
-function isInsideCourt(courtPt) {
-  const margin = 0.0; // 0mm toleranssi — viiva on sisällä
-  return courtPt.x >= -margin && courtPt.x <= COURT_W + margin &&
-         courtPt.y >= -margin && courtPt.y <= COURT_H + margin;
-}
-
-// === TULOS ===
-function calculateResult() {
-  if (!ballPoint || !courtProfile) return;
-
-  const pts = courtProfile.points;
-
-  // Yritä perspektiivikorjaus ensin
-  let inside, distCm, method;
-  const H = computeHomography(pts);
-
-  if (H) {
-    // Muunna pallon sijainti kentän koordinaateiksi
-    const courtPt = imageToCourtMeters(ballPoint, H);
-    if (courtPt) {
-      inside = isInsideCourt(courtPt);
-      const distM = distToCourtLinesMeters(courtPt);
-      distCm = Math.round(distM * 100);
-      method = 'PERSPEKTIIVIKORJAUS';
-    }
-  }
-
-  // Varasuunnitelma jos homografia epäonnistui
-  if (distCm === undefined) {
-    inside = pointInPolygon(ballPoint, pts);
-    const dist = distToPolygon(ballPoint, pts);
-    distCm = Math.round(dist * 2600);
-    method = 'PERUSLASKENTA';
-  }
-
-  // Vyöhyke saksalaiselle
-  let zone = '';
-  if (courtProfile.netPoint) {
-    const nx = courtProfile.netPoint.x;
-    const isLeft = ballPoint.x < nx;
-    const isNear = ballPoint.y > 0.5;
-    zone = ` · ${isLeft ? 'VASEN' : 'OIKEA'} ${isNear ? 'ETU' : 'TAKA'}`;
-  }
-
-  showResult(inside, distCm, zone, method);
-}
-
-function pointInPolygon(pt, poly) {
-  let inside = false;
-  const {x,y} = pt;
-  for (let i=0,j=poly.length-1;i<poly.length;j=i++) {
-    const xi=poly[i].x,yi=poly[i].y,xj=poly[j].x,yj=poly[j].y;
-    if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi)) inside=!inside;
-  }
-  return inside;
-}
-
-function distToPolygon(pt, poly) {
-  let min=Infinity;
-  for(let i=0,j=poly.length-1;i<poly.length;j=i++){const d=ptSeg(pt,poly[j],poly[i]);if(d<min)min=d;}
-  return min;
-}
-
-function ptSeg(p,a,b) {
-  const dx=b.x-a.x,dy=b.y-a.y,len=dx*dx+dy*dy;
-  let t=len>0?((p.x-a.x)*dx+(p.y-a.y)*dy)/len:0;
+function ptSeg2(p,a,b) {
+  const dx=b.x-a.x,dy=b.y-a.y,l=dx*dx+dy*dy;
+  let t=l>0?((p.x-a.x)*dx+(p.y-a.y)*dy)/l:0;
   t=Math.max(0,Math.min(1,t));
   return Math.sqrt((p.x-a.x-t*dx)**2+(p.y-a.y-t*dy)**2);
 }
 
-function showResult(inside, distCm, zone, method) {
-  document.getElementById('screen-analysis').style.display='none';
-  const rs=document.getElementById('result-section');
-  rs.style.display='flex'; rs.className=inside?'in-result':'out-result';
-  document.getElementById('verdict-text').textContent=inside?'IN':'OUT';
-  document.getElementById('result-dist').textContent=inside
-    ?`${distCm} cm viivasta sisään`:`${distCm} cm viivasta ulos`;
-  const camLabels=['CAM 1','CAM 2','CAM 3','CAM 4'];
-  document.getElementById('result-detail').textContent=
-    `${camLabels[selectedCam]||'CAM'} · ${method||'LASKENTA'} · BUFFER: ${bufferSeconds}s${zone}`;
-  setStep(4);
+function isInside(p) {
+  return p.x>=-0.01&&p.x<=COURT_W+0.01&&p.y>=-0.01&&p.y<=COURT_H+0.01;
 }
 
-// === NAVIGOINTI ===
+// Varasuunnitelma ilman perspektiivikorjausta
+function pointInPoly(pt,poly) {
+  let ins=false; const{x,y}=pt;
+  for(let i=0,j=poly.length-1;i<poly.length;j=i++){
+    const xi=poly[i].x,yi=poly[i].y,xj=poly[j].x,yj=poly[j].y;
+    if(((yi>y)!==(yj>y))&&(x<(xj-xi)*(y-yi)/(yj-yi)+xi)) ins=!ins;
+  }
+  return ins;
+}
+function distToPoly(pt,poly){let m=Infinity;for(let i=0,j=poly.length-1;i<poly.length;j=i++){const d=ptSeg2(pt,{x:poly[j].x,y:poly[j].y},{x:poly[i].x,y:poly[i].y});if(d<m)m=d;}return m;}
+
+// === TULOS ===
+function calculateResult() {
+  if (!ballPoint || !courtProfile) return;
+  const pts = courtProfile.points;
+  let inside, distCm, method;
+  const H = computeH(pts);
+  if (H) {
+    const cp = imgToMeters(ballPoint, H);
+    if (cp) { inside=isInside(cp); distCm=Math.round(distToLines(cp)*100); method='Perspektiivikorjaus'; }
+  }
+  if (distCm===undefined) {
+    inside=pointInPoly(ballPoint,pts); distCm=Math.round(distToPoly(ballPoint,pts)*2600); method='Peruslaskenta';
+  }
+  let zone='';
+  if (courtProfile.netPoint) {
+    const nx=courtProfile.netPoint.x;
+    zone=`${ballPoint.x<nx?'Vasen':'Oikea'} ${ballPoint.y>0.5?'etukenttä':'takakenttä'}`;
+  }
+  showResult(inside, distCm, zone, method);
+}
+
+function showResult(inside, distCm, zone, method) {
+  showScreen('screen-result');
+  const card=document.getElementById('result-card');
+  card.className='result-card '+(inside?'in-card':'out-card');
+  document.getElementById('result-emoji').textContent = inside ? '✅' : '❌';
+  document.getElementById('verdict-text').textContent = inside ? 'SISÄLLÄ' : 'ULKONA';
+  document.getElementById('result-dist').textContent = inside
+    ? `${distCm} cm viivasta sisään` : `${distCm} cm viivasta ulos`;
+  const zoneEl = document.getElementById('result-zone');
+  if (zone) { zoneEl.textContent = zone; zoneEl.style.display='block'; } else zoneEl.style.display='none';
+  document.getElementById('result-detail').textContent = `Tuomarintorni · ${method}`;
+}
+
 function newAnalysis() {
   ballPoint=null;
-  document.getElementById('result-section').style.display='none';
-  document.getElementById('screen-analysis').style.display='flex';
-  document.getElementById('screen-analysis').style.flexDirection='column';
   document.getElementById('action-btn').disabled=true;
-  setStep(3); drawAll();
+  showScreen('screen-analysis');
+  document.getElementById('instructions').innerHTML='<div>👆 Napauta pallon pomppupiste</div><span>Pysäytä video oikeaan kohtaan, sitten napauta mihin pallo osui</span>';
+  drawAll();
 }
 
 function backToRecording() {
-  ballPoint=null; audioData=[]; haastoMarks=[]; pendingSeekSeconds=0;
-  document.getElementById('result-section').style.display='none';
-  document.getElementById('screen-analysis').style.display='none';
-  document.getElementById('screen-recording').style.display='flex';
-  document.getElementById('screen-recording').style.flexDirection='column';
+  ballPoint=null; audioData=[]; haastoMarks=[]; pendingSeekSec=0;
+  document.getElementById('marks-wrap').style.display='none';
+  document.getElementById('marks-list').innerHTML='';
   document.getElementById('haasto-btn').classList.remove('pressed');
   document.getElementById('haasto-btn').textContent='⚡ HAASTO';
-  document.getElementById('marks-section').style.display='none';
-  document.getElementById('marks-list').innerHTML='';
-  recordedChunks=[]; bufferSeconds=0;
+  recordedChunks=[]; bufferSec=0;
   document.getElementById('buffer-badge').textContent='Puskuri: 0s';
-  document.getElementById('header-status').textContent='REC';
-  document.getElementById('header-status').style.color='var(--out)';
-  setStep(2);
+  showScreen('screen-recording');
+  setHeaderRec(true);
 
   navigator.mediaDevices.getUserMedia({
     video:{facingMode:'environment',width:{ideal:1280},height:{ideal:720}},audio:true
-  }).then(stream => {
-    mediaStream=stream;
-    document.getElementById('camera-feed').srcObject=stream;
+  }).then(s => {
+    mediaStream=s;
+    document.getElementById('camera-feed').srcObject=s;
     document.getElementById('camera-feed').style.display='block';
     document.getElementById('no-camera-msg').style.display='none';
-    startBuffer();
-    startVoiceRecognition();
+    startBuffer(); startVoice();
   }).catch(() => {
     document.getElementById('camera-feed').style.display='none';
-    document.getElementById('no-camera-msg').style.display='block';
-    startFallbackBuffer();
+    document.getElementById('no-camera-msg').style.display='flex';
+    startFallbackTimer();
   });
 }
 
 function goBack() {
-  clearInterval(bufferInterval);
+  clearInterval(bufferTimer); stopVoice();
   if(mediaRecorder&&mediaRecorder.state!=='inactive') mediaRecorder.stop();
   if(mediaStream) mediaStream.getTracks().forEach(t=>t.stop());
-  recordedChunks=[]; bufferSeconds=0; selectedCam=-1;
-  document.querySelectorAll('.cam-card').forEach(c=>c.classList.remove('selected'));
-  document.getElementById('start-btn').disabled=true;
-  document.getElementById('screen-recording').style.display='none';
-  document.getElementById('screen-select').style.display='flex';
-  document.getElementById('screen-select').style.flexDirection='column';
-  document.getElementById('header-status').textContent='VALMIINA';
-  document.getElementById('header-status').style.color='var(--gold)';
-  setStep(1);
-}
-
-function setStep(n) {
-  for(let i=1;i<=4;i++) document.getElementById('s'+i).className='step'+(i<n?' done':i===n?' active':'');
+  recordedChunks=[]; bufferSec=0;
+  showScreen('screen-select');
+  setHeaderRec(false);
 }
 
 function shareResult() {
   const v=document.getElementById('verdict-text').textContent;
   const d=document.getElementById('result-dist').textContent;
-  if(navigator.share) navigator.share({title:'Hawk-Eye Judge',text:`Hawk-Eye Judge: ${v} — ${d}`});
-  else navigator.clipboard.writeText(`Hawk-Eye Judge: ${v} — ${d}`).then(()=>alert('Kopioitu!'));
+  const txt=`Viivajudge: ${v} — ${d}`;
+  if(navigator.share) navigator.share({title:'Viivajudge',text:txt});
+  else navigator.clipboard.writeText(txt).then(()=>alert('Kopioitu! 📋'));
+}
+
+// === APUFUNKTIOT ===
+function showScreen(id) {
+  ['screen-select','screen-calib','screen-recording','screen-analysis','screen-result'].forEach(s => {
+    const el=document.getElementById(s);
+    if (s===id) { el.style.display='flex'; el.style.flexDirection='column'; }
+    else el.style.display='none';
+  });
+}
+
+function setHeaderRec(isRec) {
+  const pill=document.getElementById('header-pill');
+  const status=document.getElementById('header-status');
+  if (isRec) {
+    pill.className='rec-pill';
+    pill.innerHTML='<div class="rec-dot"></div><span id="header-status">REC</span>';
+  } else {
+    pill.className='ready-pill';
+    pill.innerHTML='<div style="width:7px;height:7px;border-radius:50%;background:currentColor"></div><span id="header-status">Valmis</span>';
+  }
 }
 
 // === KÄYNNISTYS ===
-loadCourtProfile();
+loadProfile();
+showScreen('screen-select');
 </script>
 </body>
 </html>
