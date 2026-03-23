@@ -8,19 +8,21 @@
   @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Mono:wght@400;700&display=swap');
 
   :root {
-    --bg: #0d1f0d;
-    --surface: #132213;
-    --surface2: #1a2e1a;
-    --court: #2d5a1b;
-    --line: #f0ece0;
+    --bg: #0f1e0f;
+    --surface: #1a3a1a;
+    --surface2: #243c24;
+    --court: #2a5e2a;
+    --stripe: #c8a800;
+    --line: #f5f0e8;
     --in: #4ade80;
     --out: #f87171;
-    --text: #e8f5e0;
-    --muted: #6b8f5e;
-    --accent: #86efac;
-    --gold: #fbbf24;
+    --text: #f5f0e8;
+    --muted: #7aaa7a;
+    --accent: #c8a800;
+    --accent-light: #c8a800;
+    --gold: #c8e620;
     --red: #ef4444;
-    --white: #f0ece0;
+    --white: #f5f0e8;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
@@ -39,7 +41,7 @@
     padding: 12px 16px;
     display: flex; align-items: center; justify-content: space-between;
     background: var(--surface);
-    border-bottom: 2px solid var(--court);
+    border-bottom: 2px solid #2d5a2d;
   }
   .logo { display:flex; align-items:center; gap:8px; }
   .logo-icon { font-size: 24px; }
@@ -79,9 +81,9 @@
     cursor: pointer; transition: all 0.15s; letter-spacing: 0.3px;
   }
   .btn:active { transform: scale(0.96); }
-  .btn-primary { background: var(--accent); color: #0d1f0d; }
-  .btn-primary:hover { background: #a7f3c0; }
-  .btn-secondary { background: var(--surface2); color: var(--text); border: 1.5px solid rgba(134,239,172,0.2); }
+  .btn-primary { background: #c8a800; color: #1a1a00; }
+  .btn-primary:hover { background: #e0bc00; }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1.5px solid rgba(245,240,232,0.15); }
   .btn-ghost { background: transparent; color: var(--muted); font-size: 13px; font-weight: 600; padding: 8px 14px; }
   .btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
@@ -100,32 +102,26 @@
   }
 
   .hero-card {
-    background: var(--court);
-    border-radius: 20px; padding: 20px;
+    background: var(--surface);
+    border-radius: 20px;
     text-align: center;
-    position: relative; overflow: hidden;
+    overflow: hidden;
+    border: 2px solid #2d5a2d;
   }
-  .hero-card::before {
-    content: ''; position: absolute;
-    top:0; left:0; right:0; bottom:0;
-    background: repeating-linear-gradient(
-      45deg, transparent, transparent 10px,
-      rgba(255,255,255,0.02) 10px, rgba(255,255,255,0.02) 11px
-    );
+  .hero-stripe {
+    height: 7px;
+    background: repeating-linear-gradient(90deg, #c8a800 0%, #c8a800 33.3%, #f5f0e8 33.3%, #f5f0e8 66.6%, #c8a800 66.6%, #c8a800 100%);
   }
-  .hero-emoji { font-size: 48px; display: block; margin-bottom: 8px; }
-  .hero-title { font-size: 22px; font-weight: 900; color: var(--white); margin-bottom: 4px; }
-  .hero-sub { font-size: 13px; color: rgba(240,236,224,0.7); line-height: 1.5; }
+  .hero-title { font-size: 32px; font-weight: 900; color: var(--white); padding: 20px 20px 20px; letter-spacing: -0.5px; }
 
   .profile-ok {
     display: flex; align-items: center; gap: 10px;
-    background: rgba(74,222,128,0.08);
-    border: 1.5px solid rgba(74,222,128,0.25);
+    background: rgba(200,168,0,0.12);
+    border: 1.5px solid rgba(200,168,0,0.4);
     border-radius: 12px; padding: 10px 14px;
   }
-  .profile-ok-dot { width:10px; height:10px; border-radius:50%; background:var(--in); animation: pulse-green 2s infinite; flex-shrink:0; }
-  .profile-ok-text { font-size: 13px; font-weight: 700; color: var(--in); flex:1; }
-  .profile-ok-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
+  .profile-ok-dot { width:10px; height:10px; border-radius:50%; background:#c8a800; animation: pulse-green 2s infinite; flex-shrink:0; }
+  .profile-ok-text { font-size: 13px; font-weight: 700; color: #fef0a0; flex:1; }  .profile-ok-sub { font-size: 11px; color: var(--muted); margin-top: 1px; }
 
   .cam-label { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
   .cam-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
@@ -184,9 +180,9 @@
     cursor: pointer; transition: all 0.15s;
   }
   .court-type-tile:active { transform: scale(0.98); }
-  .court-type-tile.selected { border-color: var(--accent); background: rgba(134,239,172,0.08); }
+  .court-type-tile.selected { border-color: #c8a800; background: rgba(200,168,0,0.15); }
   .ct-name { font-size: 15px; font-weight: 800; color: var(--text); }
-  .court-type-tile.selected .ct-name { color: var(--accent); }
+  .court-type-tile.selected .ct-name { color: #fef0a0; }
   .ct-dims { font-size: 12px; font-weight: 600; color: var(--muted); font-family: 'Space Mono', monospace; }
 
   /* === NÄYTTÖ 3: KUVAUS === */
@@ -394,43 +390,64 @@
   <div id="screen-select">
 
     <div class="hero-card">
-      <span class="hero-emoji">🎾</span>
+      <div class="hero-stripe"></div>
       <div class="hero-title">IN vai OUT?</div>
     </div>
 
     <!-- Ohjeet ensikertalaiselle — piilotetaan kun kenttä on kalibroitu -->
-    <div id="instructions-card" style="background:var(--surface);border-radius:16px;padding:16px;border:1.5px solid rgba(134,239,172,0.1);">
-      <div style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">📋 Näin aloitat</div>
+    <div id="instructions-card" style="display:flex;flex-direction:column;gap:10px;">
 
-      <div style="display:flex;flex-direction:column;gap:10px;">
-        <div style="display:flex;gap:12px;align-items:flex-start;">
-          <div style="width:28px;height:28px;border-radius:50%;background:rgba(134,239,172,0.15);border:1.5px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:var(--accent);flex-shrink:0;">1</div>
+      <!-- Kohta 1 -->
+      <div style="background:var(--surface);border-radius:16px;overflow:hidden;border:1.5px solid rgba(232,98,42,0.15);">
+        <div style="background:rgba(200,168,0,0.1);padding:14px 16px;display:flex;align-items:center;gap:12px;">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#060e1a;flex-shrink:0;">1</div>
           <div>
-            <div style="font-size:14px;font-weight:800;color:var(--text);">Kalibroi kenttä</div>
-            <div style="font-size:12px;color:var(--muted);line-height:1.5;margin-top:2px;">Tehdään vain kerran — sovellus muistaa kentän automaattisesti. Tee uudelleen vain jos vaihdat kenttää.</div>
+            <div style="font-size:15px;font-weight:900;color:var(--accent);">Kalibroi kenttä</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;line-height:1.4;">Tehdään vain kerran. Tee uudelleen vain jos vaihdat kenttää.</div>
           </div>
         </div>
+        <div style="padding:12px 16px;">
+          <button onclick="startCalibration()" style="width:100%;padding:13px;border-radius:10px;border:none;background:#c8a800;color:#1a1a00;font-family:Nunito,sans-serif;font-size:15px;font-weight:900;cursor:pointer;letter-spacing:0.3px;">
+            📐 Aloita kalibrointi
+          </button>
+        </div>
+      </div>
 
-        <div style="display:flex;gap:12px;align-items:flex-start;">
-          <div style="width:28px;height:28px;border-radius:50%;background:rgba(134,239,172,0.15);border:1.5px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:var(--accent);flex-shrink:0;">2</div>
+      <!-- Kohta 2 -->
+      <div style="background:var(--surface);border-radius:16px;overflow:hidden;border:1.5px solid rgba(232,98,42,0.15);">
+        <div style="background:rgba(200,168,0,0.1);padding:14px 16px;display:flex;align-items:center;gap:12px;">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#060e1a;flex-shrink:0;">2</div>
           <div>
-            <div style="font-size:14px;font-weight:800;color:var(--text);">Valitse kentän tyyppi</div>
-            <div style="font-size:12px;color:var(--muted);line-height:1.5;margin-top:2px;">
-              <span style="color:var(--accent);font-weight:700;">Nelinpeli</span> 10,97 × 23,77 m &nbsp;·&nbsp;
-              <span style="color:var(--accent);font-weight:700;">Kaksinpeli</span> 8,23 × 23,77 m &nbsp;·&nbsp;
-              <span style="color:var(--accent);font-weight:700;">Muu</span> syötä mitat itse
-            </div>
+            <div style="font-size:15px;font-weight:900;color:var(--accent);">Valitse kentän tyyppi</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;line-height:1.4;">Nelinpeli · Kaksinpeli · tai syötä omat mitat</div>
           </div>
         </div>
+        <div style="padding:12px 16px;display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;gap:8px;">
+            <button onclick="quickSelectCourt(0)" id="quick-ct-0" style="flex:1;padding:11px 8px;border-radius:10px;border:2px solid #c8a800;background:rgba(200,168,0,0.12);color:var(--accent);font-family:Nunito,sans-serif;font-size:13px;font-weight:800;cursor:pointer;">
+              🎾 Nelinpeli<br><span style="font-size:10px;font-weight:600;opacity:0.7;">10,97 × 23,77 m</span>
+            </button>
+            <button onclick="quickSelectCourt(1)" id="quick-ct-1" style="flex:1;padding:11px 8px;border-radius:10px;border:2px solid rgba(200,168,0,0.2);background:var(--surface2);color:var(--muted);font-family:Nunito,sans-serif;font-size:13px;font-weight:800;cursor:pointer;">
+              🎾 Kaksinpeli<br><span style="font-size:10px;font-weight:600;opacity:0.7;">8,23 × 23,77 m</span>
+            </button>
+          </div>
+          <button onclick="quickSelectCourt(2)" id="quick-ct-2" style="width:100%;padding:11px;border-radius:10px;border:2px solid rgba(200,168,0,0.2);background:var(--surface2);color:var(--muted);font-family:Nunito,sans-serif;font-size:13px;font-weight:800;cursor:pointer;text-align:left;">
+            📏 Muu kenttä — <span style="font-size:12px;opacity:0.7;">syötä omat mitat</span>
+          </button>
+        </div>
+      </div>
 
-        <div style="display:flex;gap:12px;align-items:flex-start;">
-          <div style="width:28px;height:28px;border-radius:50%;background:rgba(134,239,172,0.15);border:1.5px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:var(--accent);flex-shrink:0;">3</div>
+      <!-- Kohta 3 -->
+      <div style="background:var(--surface);border-radius:16px;overflow:hidden;border:1.5px solid rgba(232,98,42,0.15);">
+        <div style="background:rgba(200,168,0,0.1);padding:14px 16px;display:flex;align-items:center;gap:12px;">
+          <div style="width:32px;height:32px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;color:#060e1a;flex-shrink:0;">3</div>
           <div>
-            <div style="font-size:14px;font-weight:800;color:var(--text);">Pelaa!</div>
-            <div style="font-size:12px;color:var(--muted);line-height:1.5;margin-top:2px;">Kiistatilanteessa huuda <span style="color:var(--gold);font-weight:700;">HAASTO</span> — puhelin merkitsee hetken automaattisesti.</div>
+            <div style="font-size:15px;font-weight:900;color:var(--accent);">Pelaa!</div>
+            <div style="font-size:12px;color:var(--muted);margin-top:2px;line-height:1.4;">Kiistatilanteessa huuda <strong style="color:var(--out)">HAASTO</strong> — hetki merkitään automaattisesti.</div>
           </div>
         </div>
       </div>
+
     </div>
 
     <!-- Kenttäprofiili — näkyy kun kalibroitu -->
@@ -447,12 +464,7 @@
       🎬 Käynnistä kamera
     </button>
 
-    <button class="btn btn-secondary" id="calib-btn" onclick="startCalibration()" style="display:none;width:100%;">
-      📐 Kalibroi kenttä ensin
-    </button>
-
-    <p id="select-info" style="font-size:13px;color:var(--muted);text-align:center;line-height:1.6;font-weight:600;display:none;">
-    </p>
+    <p id="select-info" style="font-size:13px;color:var(--muted);text-align:center;line-height:1.6;font-weight:600;display:none;"></p>
   </div>
 
   <!-- NÄYTTÖ 2: Kalibrointi -->
@@ -760,13 +772,30 @@ function checkCalibAndStart() {
   if (courtProfile) {
     startRecording();
   } else {
-    document.getElementById('start-btn').style.display = 'none';
-    document.getElementById('calib-btn').style.display = 'block';
-    document.getElementById('select-info').innerHTML = '⚠️ <strong style="color:var(--gold)">Kenttä ei ole vielä kalibroitu.</strong><br>Kalibrointi tehdään kerran — jatkossa suoraan pelaamaan!';
+    startCalibration();
   }
 }
 
-// === KENTÄN TYYPIN VALINTA ===
+// === KENTÄN TYYPIN PIKAVALINNAT ETUSIVULTA ===
+function quickSelectCourt(i) {
+  selectedCourtType = i;
+  // Päivitä painikkeiden ulkonäkö
+  [0,1,2].forEach(j => {
+    const btn = document.getElementById('quick-ct-' + j);
+    if (!btn) return;
+    if (j === i) {
+      btn.style.borderColor = 'var(--accent)';
+      btn.style.background = 'rgba(232,98,42,0.12)';
+      btn.style.color = 'var(--accent)';
+    } else {
+      btn.style.borderColor = 'rgba(232,98,42,0.15)';
+      btn.style.background = 'var(--surface2)';
+      btn.style.color = 'var(--muted)';
+    }
+  });
+  const ct = COURT_TYPES[i];
+  if (ct && ct.w) { COURT_W = ct.w; COURT_H = ct.h; }
+}
 function selectCourtType(i) {
   selectedCourtType = i;
   document.querySelectorAll('.court-type-tile').forEach((t,j) => {
