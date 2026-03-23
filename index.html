@@ -396,9 +396,46 @@
     <div class="hero-card">
       <span class="hero-emoji">🎾</span>
       <div class="hero-title">Viivajudge</div>
-      <div class="hero-sub">Kiistatilanteessa huuda <strong style="color:#fbbf24">HAASTO</strong><br>— puhelin merkitsee hetken automaattisesti.</div>
+      <div class="hero-sub">Automaattinen viivapallojärjestelmä</div>
     </div>
 
+    <!-- Ohjeet ensikertalaiselle — piilotetaan kun kenttä on kalibroitu -->
+    <div id="instructions-card" style="background:var(--surface);border-radius:16px;padding:16px;border:1.5px solid rgba(134,239,172,0.1);">
+      <div style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;">📋 Näin aloitat</div>
+
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:28px;height:28px;border-radius:50%;background:rgba(134,239,172,0.15);border:1.5px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:var(--accent);flex-shrink:0;">1</div>
+          <div>
+            <div style="font-size:14px;font-weight:800;color:var(--text);">Kalibroi kenttä</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.5;margin-top:2px;">Tehdään vain kerran — sovellus muistaa kentän automaattisesti. Tee uudelleen vain jos vaihdat kenttää.</div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:28px;height:28px;border-radius:50%;background:rgba(134,239,172,0.15);border:1.5px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:var(--accent);flex-shrink:0;">2</div>
+          <div>
+            <div style="font-size:14px;font-weight:800;color:var(--text);">Valitse kentän tyyppi</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.5;margin-top:2px;">
+              <span style="color:var(--accent);font-weight:700;">Nelinpeli</span> 10,97 × 23,77 m &nbsp;·&nbsp;
+              <span style="color:var(--accent);font-weight:700;">Yksinkentä</span> 8,23 × 23,77 m &nbsp;·&nbsp;
+              <span style="color:var(--accent);font-weight:700;">Padel</span> 10 × 20 m &nbsp;·&nbsp;
+              <span style="color:var(--accent);font-weight:700;">Muu</span> syötä mitat itse
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:12px;align-items:flex-start;">
+          <div style="width:28px;height:28px;border-radius:50%;background:rgba(134,239,172,0.15);border:1.5px solid var(--accent);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:900;color:var(--accent);flex-shrink:0;">3</div>
+          <div>
+            <div style="font-size:14px;font-weight:800;color:var(--text);">Pelaa!</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.5;margin-top:2px;">Kiistatilanteessa huuda <span style="color:var(--gold);font-weight:700;">HAASTO</span> — puhelin merkitsee hetken automaattisesti.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Kenttäprofiili — näkyy kun kalibroitu -->
     <div class="profile-ok" id="profile-badge" style="display:none">
       <div class="profile-ok-dot"></div>
       <div>
@@ -416,8 +453,7 @@
       📐 Kalibroi kenttä ensin
     </button>
 
-    <p id="select-info" style="font-size:13px;color:var(--muted);text-align:center;line-height:1.6;font-weight:600;">
-      Ensimmäisellä kerralla pyydetään kalibroimaan kenttä kerran.
+    <p id="select-info" style="font-size:13px;color:var(--muted);text-align:center;line-height:1.6;font-weight:600;display:none;">
     </p>
   </div>
 
@@ -712,6 +748,7 @@ function loadProfile() {
       const type = courtProfile.courtType || 'Nelinpeli';
       document.getElementById('profile-badge').style.display = 'flex';
       document.getElementById('profile-sub').textContent = `${type} · Kalibroitu ${d.toLocaleDateString('fi-FI')}`;
+      document.getElementById('instructions-card').style.display = 'none';
       return true;
     }
   } catch(e) {}
@@ -728,7 +765,7 @@ function resetCalibration() {
   courtProfile = null;
   try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
   document.getElementById('profile-badge').style.display = 'none';
-  document.getElementById('select-info').textContent = 'Ensimmäisellä kerralla pyydetään kalibroimaan kenttä kerran.';
+  document.getElementById('instructions-card').style.display = 'block';
 }
 
 // === KAMERAN VALINTA (poistettu — yksi kamera tuomarintornissa) ===
