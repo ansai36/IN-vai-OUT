@@ -313,7 +313,7 @@
 
   #video-wrap {
     position: relative; border-radius: 14px; overflow: hidden;
-    background: #000; cursor: crosshair; touch-action: none;
+    background: #111; cursor: crosshair; touch-action: none; min-height: 220px;
     border: 2px solid rgba(134,220,134,0.35);
   }
   #video-wrap video { width:100%; display:block; max-height:45vh; object-fit:contain; }
@@ -659,10 +659,10 @@
     </div>
 
     <div class="timeline-card">
-      <div class="timeline-label">🔊 Lyöntiäänet — napauta oikeaa hetkeä</div>
+      <div class="timeline-label">🔊 Äänipiikkijana — napauta pomppuäänestä</div>
       <canvas id="timeline-canvas" height="56"></canvas>
-      <div class="timeline-times"><span>-60s</span><span>-30s</span><span>Nyt</span></div>
-      <div class="timeline-hint">Napauta aikajanalta kohtaa jossa lyöntiääni on voimakkain</div>
+      <div class="timeline-times"><span>-60s</span><span>-30s</span><span>Haasto</span></div>
+      <div class="timeline-hint">Korkea piikki = kova ääni. Napauta kohtaa jossa pallo osui maahan.</div>
     </div>
 
     <div id="video-wrap">
@@ -678,17 +678,17 @@
     </div>
 
     <div style="display:flex;gap:6px;">
-      <button class="btn btn-secondary" onclick="stepFrame(-1)" style="flex:1">‹ Kehys</button>
-      <button class="btn btn-secondary" onclick="stepFrame(1)" style="flex:1">Kehys ›</button>
+      <button class="btn btn-secondary" onclick="stepFrame(-1)" style="flex:1">‹ Edellinen kehys</button>
+      <button class="btn btn-secondary" onclick="stepFrame(1)" style="flex:1">Seuraava kehys ›</button>
     </div>
 
     <div class="step-hint" id="instructions">
       <div>👆 Napauta pallon pomppupiste</div>
-      <span>Pysäytä video oikeaan kohtaan, sitten napauta mihin pallo osui</span>
+      <span>1. Etsi aikajanalta pomppuääni · 2. Pysäytä video · 3. Napauta osumakohta</span>
     </div>
 
     <button class="btn btn-primary" id="action-btn" onclick="calculateResult()" disabled style="width:100%;font-size:17px;padding:16px;">
-      Laske tulos →
+      ✅ Laske tulos
     </button>
   </div>
 
@@ -1194,10 +1194,26 @@ function openAnalysis(src) {
   ballPoint = null;
   document.getElementById('action-btn').disabled = true;
   document.getElementById('screen-calib').style.display = 'none';
+  document.getElementById('instructions').innerHTML = '<div>⏳ Ladataan videota...</div><span>Hetki, odota</span>';
+
+  // Varmista canvakset heti kun näyttö on auki
+  ensureCanvases();
 
   const url = URL.createObjectURL(src instanceof Blob ? src : src);
-  vid.src = url; vid.load();
+  vid.src = url;
+  vid.load();
+
+  // Timeout — jos video ei lataudu 8 sekunnissa, näytä manuaalinen lataus
+  const loadTimeout = setTimeout(() => {
+    if (vid.readyState < 1) {
+      document.getElementById('instructions').innerHTML =
+        '<div>⚠️ Video ei latautunut</div><span>Selain ei tue tallennusformaattia. Lataa video käsin.</span><br>' +
+        '<button onclick="document.getElementById(\'manual-upload\').click()" style="margin-top:8px;padding:8px 16px;background:#c8a800;color:#1a1a00;border:none;border-radius:10px;font-family:Nunito,sans-serif;font-size:14px;font-weight:800;cursor:pointer;">Lataa video</button>';
+    }
+  }, 8000);
+
   vid.onloadedmetadata = () => {
+    clearTimeout(loadTimeout);
     document.getElementById('scrubber').max = vid.duration;
     updateTime(); resizeCanvases();
     vid.currentTime = pendingSeekSec > 0 && pendingSeekSec < vid.duration
@@ -1205,7 +1221,16 @@ function openAnalysis(src) {
       : Math.max(0, vid.duration - 5);
     pendingSeekSec = 0;
     analyzeAudio(src);
-    document.getElementById('instructions').innerHTML = '<div>👆 Napauta pallon pomppupiste</div><span>Pysäytä video oikeaan kohtaan, sitten napauta mihin pallo osui</span>';
+    document.getElementById('instructions').innerHTML =
+      '<div>👆 Napauta pallon pomppupiste</div>' +
+      '<span>1. Etsi aikajanalta pomppuääni · 2. Pysäytä video · 3. Napauta osumakohta</span>';
+  };
+
+  vid.onerror = () => {
+    clearTimeout(loadTimeout);
+    document.getElementById('instructions').innerHTML =
+      '<div>⚠️ Videovirhe — lataa käsin</div>' +
+      '<button onclick="document.getElementById(\'manual-upload\').click()" style="margin-top:8px;padding:8px 16px;background:#c8a800;color:#1a1a00;border:none;border-radius:10px;font-family:Nunito,sans-serif;font-size:14px;font-weight:800;cursor:pointer;">Lataa video</button>';
   };
 }
 
@@ -1264,10 +1289,24 @@ tlCanvas.addEventListener('touchend', e => {
 
 // === VIDEO ===
 function resizeCanvases() {
-  const r = vid.getBoundingClientRect(); if (!r.width) return;
-  courtCanvas.width = clickCanvas.width = r.width;
-  courtCanvas.height = clickCanvas.height = r.height;
+  const r = vid.getBoundingClientRect();
+  const wrap = document.getElementById('video-wrap');
+  const wr = wrap.getBoundingClientRect();
+  const W = wr.width || 300;
+  const H = r.height || wr.height || 200;
+  courtCanvas.width = clickCanvas.width = W;
+  courtCanvas.height = clickCanvas.height = H;
+  // Varmista että canvakset peittävät koko video-wrappin
+  courtCanvas.style.width = clickCanvas.style.width = '100%';
+  courtCanvas.style.height = clickCanvas.style.height = H + 'px';
   drawAll();
+}
+
+// Kutsutaan resizeCanvases myös kun näyttö tulee näkyviin
+function ensureCanvases() {
+  setTimeout(() => {
+    if (!courtCanvas.width || courtCanvas.width < 10) resizeCanvases();
+  }, 100);
 }
 window.addEventListener('resize', () => { resizeCanvases(); drawTimeline(); });
 vid.addEventListener('loadeddata', resizeCanvases);
@@ -1302,10 +1341,17 @@ clickCanvas.addEventListener('touchend', e => {
 
 function handleBallClick(e) {
   vid.pause();
+  // Varmista canvas-koko ennen merkintää
+  if (!clickCanvas.width || clickCanvas.width < 10) resizeCanvases();
   const r = e._rect || clickCanvas.getBoundingClientRect();
+  if (!r.width) return;
   ballPoint = { x:(e.clientX-r.left)/r.width, y:(e.clientY-r.top)/r.height };
-  document.getElementById('action-btn').disabled = false;
-  document.getElementById('instructions').innerHTML = '<div>✅ Pomppupiste merkitty!</div><span>Paina "Laske tulos" tai napauta uudelleen korjataksesi</span>';
+  const btn = document.getElementById('action-btn');
+  btn.disabled = false;
+  btn.style.opacity = '1';
+  document.getElementById('instructions').innerHTML =
+    '<div>✅ Pomppupiste merkitty!</div>' +
+    '<span>Paina "Laske tulos" tai napauta uudelleen korjataksesi sijaintia</span>';
   drawAll();
 }
 
