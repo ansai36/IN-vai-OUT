@@ -643,7 +643,11 @@
       </button>
       <div class="haasto-sub">Huuda "HAASTO" tai paina nappia — hetki merkitään automaattisesti</div>
 
-      <button class="btn btn-ghost" onclick="goBack()" style="align-self:center;">← Vaihda kulmaa</button>
+      <div style="display:flex;gap:8px;margin-top:4px;">
+        <button class="btn btn-ghost" onclick="goBack()" style="flex:1;border:1.5px solid rgba(134,220,134,0.2);border-radius:12px;">
+          🏁 Lopeta peli
+        </button>
+      </div>
     </div>
   </div>
 
@@ -690,6 +694,10 @@
     <button class="btn btn-primary" id="action-btn" onclick="calculateResult()" disabled style="width:100%;font-size:17px;padding:16px;">
       ✅ Laske tulos
     </button>
+
+    <button class="btn btn-ghost" onclick="goBack()" style="width:100%;text-align:center;border:1.5px solid rgba(134,220,134,0.15);border-radius:12px;">
+      🏁 Lopeta peli
+    </button>
   </div>
 
   <!-- NÄYTTÖ 5: Tulos -->
@@ -712,6 +720,9 @@
       <button class="btn btn-secondary" onclick="newAnalysis()">🔄 Uusi analyysi</button>
       <button class="btn btn-primary" onclick="backToRecording()">▶ Jatka peliä</button>
     </div>
+    <button class="btn btn-ghost" onclick="goBack()" style="width:100%;text-align:center;border:1.5px solid rgba(134,220,134,0.15);border-radius:12px;">
+      🏁 Lopeta peli
+    </button>
     <button class="btn btn-ghost" onclick="shareResult()" style="width:100%;">📤 Jaa tulos</button>
   </div>
 
@@ -1673,7 +1684,10 @@ function goBack() {
   clearInterval(bufferTimer); stopVoice();
   if(mediaRecorder&&mediaRecorder.state!=='inactive') mediaRecorder.stop();
   if(mediaStream) mediaStream.getTracks().forEach(t=>t.stop());
-  recordedChunks=[]; bufferSec=0;
+  // Tyhjennä video
+  vid.pause(); vid.removeAttribute('src'); vid.load();
+  recordedChunks=[]; bufferSec=0; ballPoint=null; audioData=[];
+  capturedBlob=null; haastoMarks=[];
   showScreen('screen-select');
   setHeaderRec(false);
 }
