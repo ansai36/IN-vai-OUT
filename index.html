@@ -1064,11 +1064,13 @@ function startBuffer() {
   mediaRecorder.ondataavailable = e => {
     if (e.data && e.data.size > 0) {
       recordedChunks.push({ data: e.data, time: Date.now() });
-      const cut = Date.now() - (BUFFER_SEC + 10) * 1000;
+      // Poista tiukasti kaikki yli 60 sekuntia vanhat pätkät
+      const cut = Date.now() - BUFFER_SEC * 1000;
       recordedChunks = recordedChunks.filter(c => c.time > cut);
     }
   };
-  mediaRecorder.start(2000);
+  // Tallennetaan 1 sekunnin pätkissä tarkemman leikkauksen vuoksi
+  mediaRecorder.start(1000);
   startFallbackTimer();
 }
 
